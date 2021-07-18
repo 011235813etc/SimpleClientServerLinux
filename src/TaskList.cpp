@@ -15,11 +15,19 @@ TaskList::TaskList(char* path)
     fstream file(path);
     if(file.is_open())
     {
+        const string script_def = ".sh";
+        const string comment_def = "//";
+
         string line;
-        while(getline(file, line))
-        {
+        while(getline(file, line)) {
             line.erase(remove_if(line.begin(),line.end(), is_space),line.end());
-            if(line.find(".sh") == line.size() - 3) {
+
+            auto pos = line.find(comment_def);
+            if(pos != string::npos) {
+                 line.erase(pos);
+            }
+
+            if(line.find(script_def) == line.size() - 3) {
                 cout << "line:" << line << endl;
                 commands.push_back(line);
             }

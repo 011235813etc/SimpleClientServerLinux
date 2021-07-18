@@ -5,17 +5,28 @@
 enum STATUS : uint8_t {
     DONE,
     ERROR,
-    BUSY
+    BUSY,
+    READY,
+    COMMAND,
+    RESPONSE
 };
 
 enum TARGET : uint8_t {
-    BROADCAST,
-    SINGLE
+    OWN,
+    BY_TURNS,
+    ALL
 };
 
-struct pack {
-    uint8_t id;
+enum TYPE : uint8_t {
+    LOGGER,
+    MASTER,
+    NORMAL
+};
+
+struct command {
     STATUS status;
+    TYPE client_type;
+    TARGET target;
     uint8_t task_step;
 };
 
