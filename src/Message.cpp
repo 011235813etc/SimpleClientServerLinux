@@ -1,12 +1,14 @@
 #include "Message.h"
 
-void Message::Print() {
+std::ostream& operator<<(std::ostream& os, const Message& msg) {
+
     using namespace std;
 
-    cout << status      << endl;
-    cout << client      << endl;
-    cout << target      << endl;
-    cout << "task number "   << task_step   << endl;
+    cout << msg.status      << endl;
+    cout << msg.client      << endl;
+    cout << msg.target      << endl;
+    cout << "task number "  << static_cast<uint64_t>(msg.task_step)   << endl;
+    return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const Message::CLIENT_TYPE& client_type) {

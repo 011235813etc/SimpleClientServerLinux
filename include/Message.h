@@ -13,6 +13,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const CLIENT_TYPE& client_type);
     friend std::ostream& operator<<(std::ostream& os, const TARGET& target);
     friend std::ostream& operator<<(std::ostream& os, const STATUS& status);
+    friend std::ostream& operator<<(std::ostream& os, const Message& msg);
 
     STATUS status;
     CLIENT_TYPE client;
@@ -23,7 +24,7 @@ public:
         status = STATUS::READY;
         client = CLIENT_TYPE::COMMON;
         target = TARGET::OWN;
-        task_step = 0;
+        task_step = 255;
     }
     void Print();
 };
