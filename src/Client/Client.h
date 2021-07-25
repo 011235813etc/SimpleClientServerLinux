@@ -4,8 +4,8 @@
 #include <memory>
 #include <unistd.h>
 #include <iostream>
-#include "SocketAddress.h"
-#include "Message.h"
+#include "../SocketAddress/SocketAddress.h"
+#include "../Message/Message.h"
 
 class Client {
     std::unique_ptr<SocketAddress> soc_addr;
