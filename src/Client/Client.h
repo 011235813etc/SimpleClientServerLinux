@@ -9,9 +9,9 @@
 
 class Client {
     std::unique_ptr<SocketAddress> soc_addr;
+    Message msg;
     int sock_descriptor;
-//    message msg;
-    const char msg[7] = "Hello\n";
+//    const char msg[7] = "Hello\n";
     char buf[sizeof(msg)];
 
 public:

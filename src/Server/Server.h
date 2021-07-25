@@ -6,16 +6,18 @@
 #include <iostream>
 #include "../SocketAddress/SocketAddress.h"
 #include "../Message/Message.h"
+#include <fcntl.h>
+#include <algorithm>
+#include <set>
 
 class Server {
     std::unique_ptr<SocketAddress> soc_addr;
-    int sock_descriptor;
-//    message msg;
-    char buf[1024];
+    int listener;
 
 public:
     explicit Server();
     virtual ~Server();
+    int GetListener();
 };
 
 #endif // SERVER_H

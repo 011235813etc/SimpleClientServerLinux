@@ -10,12 +10,10 @@ int main(int arg, char* args[]) {
 //	(*t_list)[0];
 //	(*t_list)[1];
 
-//    std::unique_ptr<Client> client(new Client());
-//    client->Send();
-//    client->Recv();
-//    client->PrintBuf();
-
-	std::cout << "I am Client!" << std::endl;
+    std::unique_ptr<Client> client(new Client());
+    client->Send();
+    client->Recv();
+    client->PrintBuf();
 
     return 0;
 }
