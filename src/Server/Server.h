@@ -13,11 +13,20 @@
 class Server {
     std::unique_ptr<SocketAddress> soc_addr;
     int listener;
+    
+	//задаем таймаут
+	timeval timeout;
+	int task;
 
 public:
-    explicit Server();
+    explicit Server(uint32_t timeout_sec);
     virtual ~Server();
-    int GetListener();
+    
+    void CreateSocketQueue(std::set<int>& clients, fd_set& readset);
+    void WaitEvent(std::set<int>& clients, fd_set& readset);
+    void AddNewClientsRequests(std::set<int>& clients, fd_set& readset);
+	void SetTask(uint8_t _task) { task = _task;	}
+	uint8_t GetTask()			{ return task;	}
 };
 
 #endif // SERVER_H

@@ -18,26 +18,26 @@ public:
     STATUS status;
     CLIENT_TYPE client;
     TARGET target;
-    uint8_t task_step;
+    uint8_t task;
 
     Message() {
         status = STATUS::READY;
         client = CLIENT_TYPE::COMMON;
         target = TARGET::OWN;
-        task_step = 123;
+        task = 0;
     }
     
-    Message(STATUS s, CLIENT_TYPE ct, TARGET t, int ts) {
-        status = s;
-        client = ct;
-        target = t;
-        task_step = ts;
+    Message(STATUS _status, CLIENT_TYPE _client, TARGET _target, int _task) {
+        status 	= _status;
+        client 	= _client;
+        target 	= _target;
+        task 	= _task;
     }
     
-    void SetStatus(STATUS s) { status = s; }
-    void SetClient(CLIENT_TYPE ct) { client = ct; }
-    void SetTarget(TARGET t) { target = t; }
-    void SetTaskStep(int s) {task_step = s; }
+    void SetStatus(STATUS _status) 		{ status 	= _status; 	}
+    void SetClient(CLIENT_TYPE _client) { client 	= _client; 	}
+    void SetTarget(TARGET _target) 		{ target 	= _target; 	}
+    void SetTask(int _task) 			{ task 		= _task; 	}
 };
 
 #endif // MESSAGE_H

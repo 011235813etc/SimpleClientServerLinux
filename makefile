@@ -1,5 +1,5 @@
-TARGET_CLIENT	:= Client_app
-TARGET_SERVER	:= Server_app
+TARGET_CLIENT	:= client_app
+TARGET_SERVER	:= server_app
 
 BUILD_DIR	:= build
 SRC_DIR 	:= src

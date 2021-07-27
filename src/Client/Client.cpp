@@ -2,10 +2,8 @@
 
 Client::Client(Message::CLIENT_TYPE type) {
 
-//    msg.client = type;
-
-
     msg = Message();
+    msg.client = type;
 
     soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 
@@ -46,6 +44,14 @@ void Client::PrintBuf() {
 	auto echo_msg = reinterpret_cast<Message*>(buf);
 	std::cout << *echo_msg << std::endl;
 
+}
+
+void Client::Send(Message& _msg) {
+    send(sock_descriptor, reinterpret_cast<void*>(&_msg), sizeof(_msg), 0);
+//    send(sock_descriptor, msg, sizeof(msg), 0);
+
+	std::cout << "Send message to server:" << std::endl;
+	std::cout << msg << std::endl << std::endl;
 }
 
 

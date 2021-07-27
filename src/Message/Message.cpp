@@ -7,7 +7,7 @@ std::ostream& operator<<(std::ostream& os, const Message& msg) {
     cout << msg.status      << endl;
     cout << msg.client      << endl;
     cout << msg.target      << endl;
-    cout << "task number "  << static_cast<uint64_t>(msg.task_step)   << endl;
+    cout << "task number "  << static_cast<uint64_t>(msg.task)   << endl;
     return os;
 }
 
