@@ -72,19 +72,23 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 
 
 void Server::DataProcessing(int sockfd, Message* response, int bytes_read) {
+
+	std::cout << "<< Received message from client:" << std::endl;
+	std::cout << response[0] << std::endl;
 	
 	if(response->action == Message::ACTION::COMMAND) {
-		task = response->task;
-		std::cout << "<< Receive task #" << task << std::endl;
+		CommandProcessing(response);
 	} else {
 		response->task = task;
 		std::cout << ">> Set task #" << task << std::endl;
 	}	
 	
-	std::cout << "Received message from client:" << std::endl;
-	std::cout << response[0] << std::endl;
-
 	//отправляем данные обрано клиенту
 	send(sockfd, response, sizeof(Message), 0);
+}
+
+void Server::CommandProcessing(Message* response) {
+	task = response->task;
+	response->CommandAccepted(serial_number);	
 }
 

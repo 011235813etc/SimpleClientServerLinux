@@ -12,7 +12,7 @@ Client::Client(Message::ACTION action) {
 
     msg = Message();
     msg.action = action;
-    msg.serial_number = serial_number;
+    msg.source = serial_number;
 
     soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 

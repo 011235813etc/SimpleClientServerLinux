@@ -17,6 +17,9 @@ class Server {
 	//задаем таймаут
 	timeval timeout;
 	int task;
+	static const int serial_number = 19700101;
+	
+	void CommandProcessing(Message* response);
 
 public:
     explicit Server(uint32_t timeout_sec);
