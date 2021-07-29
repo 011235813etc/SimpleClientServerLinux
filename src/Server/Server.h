@@ -26,7 +26,8 @@ public:
     void WaitEvent(std::set<int>& clients, fd_set& readset);
     void AddNewClientsRequests(std::set<int>& clients, fd_set& readset);
 	void SetTask(uint8_t _task) { task = _task;	}
-	uint8_t GetTask()			{ return task;	}
+	int  GetTask()				{ return task;	}
+	void DataProcessing(int sockfd, Message* buf, int bytes_read);
 };
 
 #endif // SERVER_H

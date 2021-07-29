@@ -37,19 +37,7 @@ int main(int arg, char* args[]) {
 					continue;
 				}
 				
-				auto msg = reinterpret_cast<Message*>(buf);
-				if(msg->status == Message::STATUS::COMMAND) {
-					server->SetTask(msg->task);
-				} else {
-					msg->task = server->GetTask();
-				}		
-				
-				std::cout << "Received message from client:" << std::endl;
-				std::cout << buf[0] << std::endl;
-				
-				//отправляем данные обрано клиенту
-//				send(*it, buf, bytes_read, 0);
-				send(*it, buf, sizeof(msg), 0);
+				server->DataProcessing(*it, buf, bytes_read);
 			}
 		}
 	}

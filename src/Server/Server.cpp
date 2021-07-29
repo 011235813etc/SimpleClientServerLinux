@@ -2,7 +2,7 @@
 
 Server::Server(uint32_t timeout_sec) {
 
-	task_step = 0;
+	task = 0;
 
 	timeout.tv_sec = timeout_sec;
 	timeout.tv_usec = 0;
@@ -68,5 +68,23 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 		fcntl(sock, F_SETFL, O_NONBLOCK);
 		clients.insert(sock);
 	}
+}
+
+
+void Server::DataProcessing(int sockfd, Message* response, int bytes_read) {
+	
+	if(response->action == Message::ACTION::COMMAND) {
+		task = response->task;
+		std::cout << "<< Receive task #" << task << std::endl;
+	} else {
+		response->task = task;
+		std::cout << ">> Set task #" << task << std::endl;
+	}	
+	
+	std::cout << "Received message from client:" << std::endl;
+	std::cout << response[0] << std::endl;
+
+	//отправляем данные обрано клиенту
+	send(sockfd, response, sizeof(Message), 0);
 }
 

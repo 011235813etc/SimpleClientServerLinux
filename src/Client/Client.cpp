@@ -1,9 +1,18 @@
 #include "Client.h"
 
-Client::Client(Message::CLIENT_TYPE type) {
+int Client::serial_number = 0;
+
+Client::Client(Message::ACTION action) {
+
+	//! initialize random seed
+	srand(time(NULL));
+	
+	//! generate serial number between 1 and 100 
+	serial_number = rand() % 100 + 1;
 
     msg = Message();
-    msg.client = type;
+    msg.action = action;
+    msg.serial_number = serial_number;
 
     soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 
@@ -27,7 +36,7 @@ void Client::Send() {
     send(sock_descriptor, reinterpret_cast<void*>(&msg), sizeof(msg), 0);
 //    send(sock_descriptor, msg, sizeof(msg), 0);
 
-	std::cout << "Send message to server:" << std::endl;
+	std::cout << ">> Send message to server:" << std::endl;
 	std::cout << msg << std::endl << std::endl;
 }
 void Client::Recv() {
@@ -40,7 +49,7 @@ void Client::PrintBuf() {
 //    message* msg = reinterpret_cast<message*>(&buf);
 //    std::cout << buf << std::endl;
 
-	std::cout << "Received message from server:" << std::endl;
+	std::cout << "<< Received message from server:" << std::endl;
 	auto echo_msg = reinterpret_cast<Message*>(buf);
 	std::cout << *echo_msg << std::endl;
 
@@ -50,8 +59,8 @@ void Client::Send(Message& _msg) {
     send(sock_descriptor, reinterpret_cast<void*>(&_msg), sizeof(_msg), 0);
 //    send(sock_descriptor, msg, sizeof(msg), 0);
 
-	std::cout << "Send message to server:" << std::endl;
-	std::cout << msg << std::endl << std::endl;
+	std::cout << ">> Send message to server:" << std::endl;
+	std::cout << _msg << std::endl << std::endl;
 }
 
 

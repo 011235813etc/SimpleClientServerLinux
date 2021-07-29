@@ -6,38 +6,35 @@
 
 class Message {
 public:
-    enum class STATUS       : uint8_t { DONE, ERROR, BUSY, READY, COMMAND, RESPONSE };
-    enum class CLIENT_TYPE  : uint8_t { COMMON, MASTER, LOGGER };
-    enum class TARGET       : uint8_t { OWN, BY_TURNS, ALL };
+	enum class ACTION : uint8_t { COMMAND, RESPONSE 		};
+    enum class STATUS : uint8_t { DONE, ERROR, BUSY, READY 	};
 
-    friend std::ostream& operator<<(std::ostream& os, const CLIENT_TYPE& client_type);
-    friend std::ostream& operator<<(std::ostream& os, const TARGET& target);
+    friend std::ostream& operator<<(std::ostream& os, const ACTION& action);
     friend std::ostream& operator<<(std::ostream& os, const STATUS& status);
     friend std::ostream& operator<<(std::ostream& os, const Message& msg);
 
+    ACTION action;
     STATUS status;
-    CLIENT_TYPE client;
-    TARGET target;
-    uint8_t task;
+    int task;
+    int serial_number;
 
     Message() {
+        action = ACTION::RESPONSE;
         status = STATUS::READY;
-        client = CLIENT_TYPE::COMMON;
-        target = TARGET::OWN;
         task = 0;
+        serial_number = 0;
     }
     
-    Message(STATUS _status, CLIENT_TYPE _client, TARGET _target, int _task) {
+    Message(const ACTION _action, const STATUS _status, const int _task, int _serial_number) {
         status 	= _status;
-        client 	= _client;
-        target 	= _target;
+        action 	= _action;
         task 	= _task;
+        serial_number = _serial_number;
     }
     
-    void SetStatus(STATUS _status) 		{ status 	= _status; 	}
-    void SetClient(CLIENT_TYPE _client) { client 	= _client; 	}
-    void SetTarget(TARGET _target) 		{ target 	= _target; 	}
-    void SetTask(int _task) 			{ task 		= _task; 	}
+    void SetStatus(const STATUS _status)	{ status 	= _status; 	}
+    void SetAction(const ACTION _action)	{ action 	= _action; 	}
+    void SetTask(const int _task)			{ task 		= _task; 	}
 };
 
 #endif // MESSAGE_H

@@ -6,21 +6,23 @@
 #include <iostream>
 #include "../SocketAddress/SocketAddress.h"
 #include "../Message/Message.h"
+#include <time.h>
 
 class Client {
     std::unique_ptr<SocketAddress> soc_addr;
     Message msg;
     int sock_descriptor;
-//    const char msg[7] = "Hello\n";
     char buf[sizeof(msg)];
+    static int serial_number;
 
 public:
-    explicit Client(Message::CLIENT_TYPE type=Message::CLIENT_TYPE::COMMON);
+    explicit Client(Message::ACTION action=Message::ACTION::COMMAND);
     virtual ~Client();
     void Send();
     void Recv();
     void PrintBuf();
     void Send(Message& _msg);
+    int GetSerialNumber() { return serial_number; }
 
     friend std::ostream& operator <<(std::ostream& os, const Message);
 };
