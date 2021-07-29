@@ -9,10 +9,13 @@ Client::Client(Message::ACTION action) {
 	
 	//! generate serial number between 1 and 100 
 	serial_number = rand() % 100 + 1;
+	
+	status = Message::STATUS::READY;
+	task = 0;
 
     msg = Message();
     msg.action = action;
-    msg.source = serial_number;
+    msg.sender = serial_number;
 
     soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 
@@ -42,6 +45,23 @@ void Client::Send() {
 void Client::Recv() {
 //    recv(sock_descriptor, reinterpret_cast<void*>(&msg), sizeof(msg), 0);
     recv(sock_descriptor, buf, sizeof(buf), 0);
+    
+	auto response = reinterpret_cast<Message*>(buf);
+    std::cout << "<< Received message from server:" << std::endl;
+	std::cout << response[0] << std::endl;
+	
+	switch(response->action) {
+	    case Message::ACTION::COMMAND: {
+	    	CommandProcessing(response);
+	    	break;
+	    }
+        case Message::ACTION::RESPONSE: {
+//        	response->task = task;
+//        	std::cout << ">> Set task #" << task << std::endl;
+        	break;
+        }
+        default: std::cout << "UNKNOWN ACTION TYPE" << std::endl; break;
+	}
 }
 
 void Client::PrintBuf() {
@@ -49,9 +69,9 @@ void Client::PrintBuf() {
 //    message* msg = reinterpret_cast<message*>(&buf);
 //    std::cout << buf << std::endl;
 
-	std::cout << "<< Received message from server:" << std::endl;
-	auto echo_msg = reinterpret_cast<Message*>(buf);
-	std::cout << *echo_msg << std::endl;
+//	std::cout << "<< Received message from server:" << std::endl;
+//	auto echo_msg = reinterpret_cast<Message*>(buf);
+//	std::cout << *echo_msg << std::endl;
 
 }
 
@@ -63,4 +83,23 @@ void Client::Send(Message& _msg) {
 	std::cout << _msg << std::endl << std::endl;
 }
 
+void Client::CommandProcessing(Message* response) {
+    
+    switch(status) {
+        case Message::STATUS::BUSY: 
+        case Message::STATUS::ERROR: {
+			response->Response(status, serial_number);
+			break;
+        }
+        case Message::STATUS::DONE:
+        case Message::STATUS::READY: {
+			response->Response(Message::STATUS::ACCEPTED, serial_number);
+        	task 	= response->task;
+			status 	= Message::STATUS::BUSY;
+			break;
+		}	
+        case Message::STATUS::ACCEPTED:	 std::cout << "ACCEPTED" << std::endl; 	break;
+        default: std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				break;
+    }
+}
 

@@ -20,6 +20,7 @@ class Server {
 	static const int serial_number = 19700101;
 	
 	void CommandProcessing(Message* response);
+	void ResponseProcessing(Message* response);
 
 public:
     explicit Server(uint32_t timeout_sec);
@@ -30,7 +31,7 @@ public:
     void AddNewClientsRequests(std::set<int>& clients, fd_set& readset);
 	void SetTask(uint8_t _task) { task = _task;	}
 	int  GetTask()				{ return task;	}
-	void DataProcessing(int sockfd, Message* buf, int bytes_read);
+	void DataProcessing(Message* buf, int bytes_read);
 };
 
 #endif // SERVER_H

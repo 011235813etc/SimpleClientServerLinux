@@ -16,27 +16,27 @@ public:
     ACTION action;
     STATUS status;
     int task;
-    int source;
+    int sender;
 
     Message() {
         action 	= ACTION::RESPONSE;
         status 	= STATUS::READY;
         task 	= 0;
-        source 	= 0;
+        sender 	= 0;
     }
     
-    Message(const ACTION _action, const STATUS _status, const int _task, int _source) {
+    Message(const ACTION _action, const STATUS _status, const int _task, int _sender) {
         status 	= _status;
         action 	= _action;
         task 	= _task;
-        source 	= _source;
+        sender 	= _sender;
     }
     
     void SetStatus(const STATUS _status)	{ status 	= _status; 	}
     void SetAction(const ACTION _action)	{ action 	= _action; 	}
     void SetTask(const int _task)			{ task 		= _task; 	}
     
-    void CommandAccepted(int source);
+    void Response(Message::STATUS _status, int _sender);
 };
 
 #endif // MESSAGE_H

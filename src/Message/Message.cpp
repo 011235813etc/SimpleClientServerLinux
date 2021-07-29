@@ -1,9 +1,9 @@
 #include "Message.h"
 
-void Message::CommandAccepted(int _source) {
+void Message::Response(Message::STATUS _status, int _sender) {
 	action = ACTION::RESPONSE;
-	status = STATUS::ACCEPTED;
-	source = _source;
+	status = _status;
+	sender = _sender;
 }
 
 
@@ -11,10 +11,10 @@ std::ostream& operator<<(std::ostream& os, const Message& msg) {
 
     using namespace std;
 
+    cout << "sender: "	<< msg.sender 	<< endl;
     cout << msg.action  << endl;
     cout << msg.status  << endl;
     cout << "task: "  	<< msg.task   	<< endl;
-    cout << "source: "	<< msg.source 	<< endl;
     return os;
 }
 

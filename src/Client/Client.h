@@ -14,6 +14,11 @@ class Client {
     int sock_descriptor;
     char buf[sizeof(msg)];
     static int serial_number;
+    
+    Message::STATUS status;
+    int task;
+    
+    void CommandProcessing(Message* response);
 
 public:
     explicit Client(Message::ACTION action=Message::ACTION::COMMAND);

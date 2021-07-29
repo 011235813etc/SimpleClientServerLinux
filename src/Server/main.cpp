@@ -37,7 +37,10 @@ int main(int arg, char* args[]) {
 					continue;
 				}
 				
-				server->DataProcessing(*it, buf, bytes_read);
+				server->DataProcessing(buf, bytes_read);
+				//отправляем данные обрано клиенту
+				send(*it, buf, sizeof(Message), 0);
+
 			}
 		}
 	}
