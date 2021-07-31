@@ -36,11 +36,9 @@ int main(int arg, char* args[]) {
 					clients.erase(*it);
 					continue;
 				}
-				
 				server->DataProcessing(buf, bytes_read);
 				//отправляем данные обрано клиенту
 				send(*it, buf, sizeof(Message), 0);
-
 			}
 		}
 	}

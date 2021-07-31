@@ -12,6 +12,7 @@ Client::Client(Message::ACTION action) {
 	
 	status = Message::STATUS::READY;
 	task = 0;
+    number_of_tasks = 5;
 
     msg = Message();
     msg.action = action;
@@ -98,8 +99,45 @@ void Client::CommandProcessing(Message* response) {
 			status 	= Message::STATUS::BUSY;
 			break;
 		}	
-        case Message::STATUS::ACCEPTED:	 std::cout << "ACCEPTED" << std::endl; 	break;
-        default: std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				break;
+        case Message::STATUS::ACCEPTED: {	 
+            std::cout << "ACCEPTED" << std::endl; 	
+            break;
+        }
+        default: {
+            std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
+            break;
+        }
     }
 }
 
+void Client::ResponseProcessing(Message* response) {
+    
+    switch(status) {
+        case Message::STATUS::BUSY: 
+        case Message::STATUS::ERROR: {
+			response->Response(Message::STATUS::ACCEPTED, serial_number);
+			break;
+        }
+        case Message::STATUS::DONE:
+        case Message::STATUS::READY: 
+        case Message::STATUS::ACCEPTED: {
+
+            if(IsTaskListEmpty()) {
+			    response->Response(Message::STATUS::ACCEPTED, serial_number);
+            } else {
+                response->task = task;
+            	std::cout << ">> Send to server task #" << task << std::endl;
+                response->Command(Message::STATUS::READY, serial_number);
+            }
+			break;
+		}	
+        default: { 
+            std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
+            break;
+        }
+    }
+}
+
+bool Client::IsTaskListEmpty() { 
+    return task == number_of_tasks; 
+}

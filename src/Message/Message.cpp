@@ -6,6 +6,12 @@ void Message::Response(Message::STATUS _status, int _sender) {
 	sender = _sender;
 }
 
+void Message::Command(Message::STATUS _status, int _sender) {
+	action = ACTION::COMMAND;
+	status = _status;
+	sender = _sender;
+}
+
 
 std::ostream& operator<<(std::ostream& os, const Message& msg) {
 

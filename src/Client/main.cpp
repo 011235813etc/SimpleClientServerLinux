@@ -16,9 +16,15 @@ int main(int arg, char* args[]) {
     Message message;
     
     if(args[1] != NULL) {
-    	message = Message(Message::ACTION::COMMAND, Message::STATUS::READY, 128, client->GetSerialNumber());
+    	message = Message(Message::ACTION::COMMAND, 
+                            Message::STATUS::READY, 
+                            128, 
+                            client->GetSerialNumber());
     } else {
-    	message = Message(Message::ACTION::RESPONSE, Message::STATUS::BUSY, 0, client->GetSerialNumber());
+    	message = Message(Message::ACTION::RESPONSE, 
+                            Message::STATUS::BUSY, 
+                            0, 
+                            client->GetSerialNumber());
     } 
     
     client->Send(message);

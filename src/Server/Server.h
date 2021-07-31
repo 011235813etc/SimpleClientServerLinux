@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <algorithm>
 #include <set>
+#include <stack>
 
 class Server {
     std::unique_ptr<SocketAddress> soc_addr;
@@ -18,6 +19,8 @@ class Server {
 	timeval timeout;
 	int task;
 	static const int serial_number = 19700101;
+
+	std::stack<int> task_stack;
 	
 	void CommandProcessing(Message* response);
 	void ResponseProcessing(Message* response);

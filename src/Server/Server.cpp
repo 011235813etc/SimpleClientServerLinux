@@ -84,7 +84,10 @@ void Server::DataProcessing(Message* response, int bytes_read) {
         	ResponseProcessing(response);
         	break;
         }
-        default: std::cout << "UNKNOWN ACTION TYPE" << std::endl; break;
+        default: {
+			std::cout << "UNKNOWN ACTION TYPE" << std::endl; 
+			break;
+		}
 	}
 	
 	//! FIXME it shouldn't be here
@@ -95,43 +98,61 @@ void Server::DataProcessing(Message* response, int bytes_read) {
 void Server::CommandProcessing(Message* response) {
 	
     switch(response->status) {
-        case Message::STATUS::BUSY: {
+		case Message::STATUS::DONE: {
 			response->Response(Message::STATUS::ACCEPTED, serial_number);
+        	task_stack.push(response->task);
+			std::cout << "Server is ready for execute tasks!" << std::endl; 			
 			break;
-        }
-        case Message::STATUS::ERROR: std::cout << "ERROR!" << std::endl; 		break;
-        //TODO просмотреть в стеке задач наличие задачи с таким номером
-        case Message::STATUS::DONE: std::cout << "DONE" << std::endl; 		break;
-        
-        case Message::STATUS::READY: {
+		}
+		case Message::STATUS::ERROR: {
+			std::cout << "ERROR!" << std::endl; 
+			std::cout << "Task steak will be cleared!" << std::endl; 	
+			while(!task_stack.empty())	{
+				std::cout << task_stack.top() << std::endl;
+				task_stack.pop();
+			}
+			break;
+		}
+        case Message::STATUS::BUSY:
+        case Message::STATUS::READY: 
+        case Message::STATUS::ACCEPTED: {
 			response->Response(Message::STATUS::ACCEPTED, serial_number);
-        	task 	= response->task;
+        	task_stack.push(response->task);
 			break;
-		}	
-        case Message::STATUS::ACCEPTED:	 std::cout << "ACCEPTED" << std::endl; 	break;
-        default: std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				break;
+		}
+        default: { 
+			std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
+			break;
+		}
     }
 }
-
 
 void Server::ResponseProcessing(Message* response) {
 	
     switch(response->status) {
-        case Message::STATUS::BUSY: {
+
+        case Message::STATUS::DONE:
+        case Message::STATUS::READY: {
+        	std::cout << ">> Set to client task #" << task << std::endl;
+        	response->task = task;
+			response->Command(Message::STATUS::READY, serial_number);
+			break;
+		}	
+		case Message::STATUS::ERROR: {
+			std::cout << "ERROR!" << std::endl; 		
+			break;
+		}
+		case Message::STATUS::BUSY: {
 			response->Response(Message::STATUS::ACCEPTED, serial_number);
 			break;
         }
-        case Message::STATUS::ERROR: std::cout << "ERROR!" << std::endl; 		break;
-        case Message::STATUS::DONE:
-        case Message::STATUS::READY: {
-        	std::cout << ">> Set task #" << task << std::endl;
-        	response->task = task;
-			response->Response(Message::STATUS::ACCEPTED, serial_number);
+        case Message::STATUS::ACCEPTED:	{ 
+			std::cout << "ACCEPTED" << std::endl; 	
 			break;
-		}	
-        case Message::STATUS::ACCEPTED:	 std::cout << "ACCEPTED" << std::endl; 	break;
-        default: std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				break;
+		}
+        default: {
+			std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
+			break;
+		}
     }
 }
-
-

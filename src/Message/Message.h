@@ -25,7 +25,10 @@ public:
         sender 	= 0;
     }
     
-    Message(const ACTION _action, const STATUS _status, const int _task, int _sender) {
+    Message(const ACTION _action, 
+            const STATUS _status, 
+            const int _task, 
+            const int _sender) {
         status 	= _status;
         action 	= _action;
         task 	= _task;
@@ -37,6 +40,7 @@ public:
     void SetTask(const int _task)			{ task 		= _task; 	}
     
     void Response(Message::STATUS _status, int _sender);
+    void Command(Message::STATUS _status, int _sender);
 };
 
 #endif // MESSAGE_H

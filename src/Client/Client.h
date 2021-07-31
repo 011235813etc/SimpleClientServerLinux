@@ -17,8 +17,12 @@ class Client {
     
     Message::STATUS status;
     int task;
+
+    int number_of_tasks;
     
     void CommandProcessing(Message* response);
+    void ResponseProcessing(Message* response);
+    bool IsTaskListEmpty();
 
 public:
     explicit Client(Message::ACTION action=Message::ACTION::COMMAND);
