@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <set>
 #include <stack>
+#include "ServerResponse.h"
 
 class Server {
     std::unique_ptr<SocketAddress> soc_addr;
@@ -20,10 +21,12 @@ class Server {
 	int task;
 	static const int serial_number = 19700101;
 
+	std::unique_ptr<ServerResponse> reply;
 	std::stack<int> task_stack;
+	Message::STATUS status;
 	
-	void CommandProcessing(Message* response);
-	void ResponseProcessing(Message* response);
+	// void CommandProcessing(Message* response);
+	// void ResponseProcessing(Message* response);
 
 public:
     explicit Server(uint32_t timeout_sec);

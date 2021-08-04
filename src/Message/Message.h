@@ -13,34 +13,27 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const STATUS& status);
     friend std::ostream& operator<<(std::ostream& os, const Message& msg);
 
+    bool operator==(const Message& msg);
+
     ACTION action;
     STATUS status;
     int task;
     int sender;
 
-    Message() {
-        action 	= ACTION::RESPONSE;
-        status 	= STATUS::READY;
-        task 	= 0;
-        sender 	= 0;
-    }
-    
-    Message(const ACTION _action, 
-            const STATUS _status, 
-            const int _task, 
-            const int _sender) {
-        status 	= _status;
-        action 	= _action;
-        task 	= _task;
-        sender 	= _sender;
-    }
+    explicit Message();
+    Message(const ACTION _action, const STATUS _status, const int _task, const int _sender);
+    Message(const Message& other);
+    Message& operator=(Message&& other);
     
     void SetStatus(const STATUS _status)	{ status 	= _status; 	}
     void SetAction(const ACTION _action)	{ action 	= _action; 	}
     void SetTask(const int _task)			{ task 		= _task; 	}
+
+    void GetStatus(const STATUS _status)	{ status 	= _status; 	}
+    void GetTask(const int _task)			{ task 		= _task; 	}
     
-    void Response(Message::STATUS _status, int _sender);
-    void Command(Message::STATUS _status, int _sender);
+    void Response(Message::STATUS _status, int _task);
+    void Command(Message::STATUS _status, int _task);
 };
 
 #endif // MESSAGE_H

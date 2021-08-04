@@ -29,7 +29,7 @@ int main(int arg, char* args[]) {
     
     client->Send(message);
     client->Recv();
-    client->PrintBuf();
+    // client->PrintBuf();
 
     return 0;
 }

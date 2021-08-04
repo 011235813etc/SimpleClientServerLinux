@@ -35,6 +35,8 @@ client: $(BUILD_DIR)/$(TARGET)
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(dir $@)
 	$(CXX) $(OBJECTS) -o $@
+	@echo ' '
+	@echo 'Program build successfully!'
 
 # pull in dependency info for *existing* .o files
 -include $(OBJECTS:.o=.d)
@@ -43,6 +45,7 @@ $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) -I$(dir $<) $^ -o $(BUILD_DIR)/$*.o
 	$(CXX) -MM $(CXXFLAGS) $^ > $(BUILD_DIR)/$*.d
+	@echo ' '
 
 # set default command
 .DEFAULT_GOAL := default
@@ -58,3 +61,42 @@ all: clean default
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
+
+###############################################################################
+UNIT_TARTGET	:= unit
+UNIT_SRC_DIR 	:= test
+UNIT			:=  $(BUILD_DIR)/$(UNIT_TARTGET)
+
+PROGRAMM_SOURCES := src/Client/ClientResponse.cpp src/Message/Message.cpp
+
+UNIT_SOURCES := $(shell find $(UNIT_SRC_DIR) -name '*.cpp') $(PROGRAMM_SOURCES)
+UNIT_OBJECTS := $(addprefix $(BUILD_DIR)/,$(UNIT_SOURCES:%.cpp=%.o))
+
+.PHONY: inf
+inf:
+	$(info $(UNIT_SOURCES))
+	$(info $(UNIT_OBJECTS))
+	
+
+CXXGTESTFLAGS = -g -L./gtest/lib -lgtest -lgtest_main -lpthread
+INCS = -I./gtest/include
+
+# link
+$(UNIT): $(UNIT_OBJECTS)
+	@mkdir -p $(dir $@)
+	$(CXX) $(INCS) -o $@ $(UNIT_OBJECTS) $(CXXGTESTFLAGS)
+	@echo ' '
+	@echo 'Unit tests build successfull!'
+	
+# pull in dependency info for *existing* .o files
+-include $(UNIT_OBJECTS:.o=.d)
+# compile and generate dependency info
+unit_compile:
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) -I$(dir $<) $^ -o $(BUILD_DIR)/$*.o $(INCS)
+	$(CXX) -MM $(CXXFLAGS) $^ > $(BUILD_DIR)/$*.d $(INCS)
+	@echo ' '
+
+.PHONY: unit
+unit: clean unit_compile $(UNIT)

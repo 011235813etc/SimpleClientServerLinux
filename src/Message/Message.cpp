@@ -1,17 +1,53 @@
 #include "Message.h"
 
-void Message::Response(Message::STATUS _status, int _sender) {
+Message::Message():action(ACTION::RESPONSE), status(STATUS::READY), task(0), sender(0)  {
+}
+    
+Message::Message(const ACTION _action, const STATUS _status, const int _task, const int _sender)
+        :action(_action), status(_status), task(_task), sender(_sender) {
+}
+
+Message::Message(const Message& other) {
+   std::cout << "In Message(const Message&)" << std::endl;
+
+   if (this != &other) {   
+        action 	= other.action;
+        status 	= other.status;
+        task 	= other.task;
+        sender 	= other.sender;
+   }
+}
+
+Message& Message::operator=(Message&& other) {
+   std::cout << "In operator=(Message&&)" << std::endl;
+
+   if (this != &other) {   
+        action 	= other.action;
+        status 	= other.status;
+        task 	= other.task;
+        sender 	= other.sender;
+   }
+   return *this;
+}
+
+bool Message::operator==(const Message& msg) {
+    return (this->action == msg.action  ||
+            this->status == msg.status  ||
+            this->task  == msg.task     ||
+            this->sender == msg.sender  );
+}
+
+void Message::Response(Message::STATUS _status, int _task) {
 	action = ACTION::RESPONSE;
 	status = _status;
-	sender = _sender;
+    task   = _task;
 }
 
-void Message::Command(Message::STATUS _status, int _sender) {
+void Message::Command(Message::STATUS _status, int _task) {
 	action = ACTION::COMMAND;
 	status = _status;
-	sender = _sender;
+    task   = _task;
 }
-
 
 std::ostream& operator<<(std::ostream& os, const Message& msg) {
 

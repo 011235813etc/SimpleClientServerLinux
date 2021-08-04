@@ -26,6 +26,9 @@ Server::Server(uint32_t timeout_sec) {
 	}
 
 	listen(listener, 2);
+
+	reply = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
+	status = Message::STATUS::READY;
 }
 
 Server::~Server() {
@@ -72,87 +75,89 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 
 void Server::DataProcessing(Message* response, int bytes_read) {
 
-	std::cout << "<< Received message from client:" << std::endl;
-	std::cout << response[0] << std::endl;
+	reply->Processing(response, status);
+
+	// std::cout << "<< Received message from client:" << std::endl;
+	// std::cout << response[0] << std::endl;
 	
-	switch(response->action) {
-	    case Message::ACTION::COMMAND: {
-	    	CommandProcessing(response);
-	    	break;
-	    }
-        case Message::ACTION::RESPONSE: {
-        	ResponseProcessing(response);
-        	break;
-        }
-        default: {
-			std::cout << "UNKNOWN ACTION TYPE" << std::endl; 
-			break;
-		}
-	}
+	// switch(response->action) {
+	//     case Message::ACTION::COMMAND: {
+	//     	CommandProcessing(response);
+	//     	break;
+	//     }
+    //     case Message::ACTION::RESPONSE: {
+    //     	ResponseProcessing(response);
+    //     	break;
+    //     }
+    //     default: {
+	// 		std::cout << "UNKNOWN ACTION TYPE" << std::endl; 
+	// 		break;
+	// 	}
+	// }
 	
-	//! FIXME it shouldn't be here
-	std::cout << ">> Send message to client:" << std::endl;
-	std::cout << response[0] << std::endl << std::endl;
+	// //! FIXME it shouldn't be here
+	// std::cout << ">> Send message to client:" << std::endl;
+	// std::cout << response[0] << std::endl << std::endl;
 }
 
-void Server::CommandProcessing(Message* response) {
+// void Server::CommandProcessing(Message* response) {
 	
-    switch(response->status) {
-		case Message::STATUS::DONE: {
-			response->Response(Message::STATUS::ACCEPTED, serial_number);
-        	task_stack.push(response->task);
-			std::cout << "Server is ready for execute tasks!" << std::endl; 			
-			break;
-		}
-		case Message::STATUS::ERROR: {
-			std::cout << "ERROR!" << std::endl; 
-			std::cout << "Task steak will be cleared!" << std::endl; 	
-			while(!task_stack.empty())	{
-				std::cout << task_stack.top() << std::endl;
-				task_stack.pop();
-			}
-			break;
-		}
-        case Message::STATUS::BUSY:
-        case Message::STATUS::READY: 
-        case Message::STATUS::ACCEPTED: {
-			response->Response(Message::STATUS::ACCEPTED, serial_number);
-        	task_stack.push(response->task);
-			break;
-		}
-        default: { 
-			std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
-			break;
-		}
-    }
-}
+//     switch(response->status) {
+// 		case Message::STATUS::DONE: {
+// 			response->Response(Message::STATUS::ACCEPTED, serial_number);
+//         	task_stack.push(response->task);
+// 			std::cout << "Server is ready for execute tasks!" << std::endl; 			
+// 			break;
+// 		}
+// 		case Message::STATUS::ERROR: {
+// 			std::cout << "ERROR!" << std::endl; 
+// 			std::cout << "Task steak will be cleared!" << std::endl; 	
+// 			while(!task_stack.empty())	{
+// 				std::cout << task_stack.top() << std::endl;
+// 				task_stack.pop();
+// 			}
+// 			break;
+// 		}
+//         case Message::STATUS::BUSY:
+//         case Message::STATUS::READY: 
+//         case Message::STATUS::ACCEPTED: {
+// 			response->Response(Message::STATUS::ACCEPTED, serial_number);
+//         	task_stack.push(response->task);
+// 			break;
+// 		}
+//         default: { 
+// 			std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
+// 			break;
+// 		}
+//     }
+// }
 
-void Server::ResponseProcessing(Message* response) {
+// void Server::ResponseProcessing(Message* response) {
 	
-    switch(response->status) {
+//     switch(response->status) {
 
-        case Message::STATUS::DONE:
-        case Message::STATUS::READY: {
-        	std::cout << ">> Set to client task #" << task << std::endl;
-        	response->task = task;
-			response->Command(Message::STATUS::READY, serial_number);
-			break;
-		}	
-		case Message::STATUS::ERROR: {
-			std::cout << "ERROR!" << std::endl; 		
-			break;
-		}
-		case Message::STATUS::BUSY: {
-			response->Response(Message::STATUS::ACCEPTED, serial_number);
-			break;
-        }
-        case Message::STATUS::ACCEPTED:	{ 
-			std::cout << "ACCEPTED" << std::endl; 	
-			break;
-		}
-        default: {
-			std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
-			break;
-		}
-    }
-}
+//         case Message::STATUS::DONE:
+//         case Message::STATUS::READY: {
+//         	std::cout << ">> Set to client task #" << task << std::endl;
+//         	response->task = task;
+// 			response->Command(Message::STATUS::READY, serial_number);
+// 			break;
+// 		}	
+// 		case Message::STATUS::ERROR: {
+// 			std::cout << "ERROR!" << std::endl; 		
+// 			break;
+// 		}
+// 		case Message::STATUS::BUSY: {
+// 			response->Response(Message::STATUS::ACCEPTED, serial_number);
+// 			break;
+//         }
+//         case Message::STATUS::ACCEPTED:	{ 
+// 			std::cout << "ACCEPTED" << std::endl; 	
+// 			break;
+// 		}
+//         default: {
+// 			std::cout << "UNKNOWN STATUS TYPE" << std::endl; 				
+// 			break;
+// 		}
+//     }
+// }
