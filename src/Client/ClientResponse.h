@@ -11,19 +11,19 @@ class ClientResponse {
     int number_of_tasks;
 
     Message resp;
-    Message::STATUS current_status;
-    int current_task;
+    Message::STATUS status;
+    int task;
 
-    void Command(Message* rcvd, int task, Message::STATUS status);
-    void Response(Message* rcvd, int task, Message::STATUS status);
+    void Command(Message* rcvd);
+    void Response(Message* rcvd);
 
 public:
-    ClientResponse(int _serial_number, int _number_of_tasks);
+    ClientResponse(int _serial_number, int _number_of_tasks, int first_task = 0);
     virtual ~ClientResponse();
-    void Processing(Message* rcvd, int task, Message::STATUS status);
-    Message::STATUS GetStatus() { return current_status; }
-    int GetTask() { return current_task; }
-    Message GetResponce() { return resp; }
+    void Processing(Message* rcvd);
+    Message::STATUS GetStatus() { return status;    }
+    int GetTask()               { return task;      }
+    Message GetResponce()       { return resp;      }
 
 };
 

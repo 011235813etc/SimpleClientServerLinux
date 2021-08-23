@@ -7,7 +7,13 @@
 class Message {
 public:
 	enum class ACTION : uint8_t { COMMAND, RESPONSE };
-    enum class STATUS : uint8_t { DONE, ERROR, BUSY, READY, ACCEPTED };
+    enum class STATUS : uint8_t { 
+        DONE, 
+        ERROR, //remove!
+        BUSY, 
+        READY, 
+        ACCEPTED 
+    };
 
     friend std::ostream& operator<<(std::ostream& os, const ACTION& action);
     friend std::ostream& operator<<(std::ostream& os, const STATUS& status);

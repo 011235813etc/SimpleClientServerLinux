@@ -16,9 +16,6 @@ class Client {
     char buf[sizeof(msg)];
     static int serial_number;
     
-    Message::STATUS status;
-    int task;
-
     int number_of_tasks;
 
     std::unique_ptr<ClientResponse> reply;
