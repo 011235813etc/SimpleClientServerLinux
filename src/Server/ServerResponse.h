@@ -1,30 +1,27 @@
 #ifndef SERVERRESPONSE_H
 #define SERVERRESPONSE_H
 
-// #include <memory>
-// #include <unistd.h>
 #include <iostream>
-#include <stack>
+#include <queue>
 #include "../Message/Message.h"
+#include "../BaseResponse/BaseResponse.h"
 
-class ServerResponse {
+class ServerResponse : public BaseResponse {
 
-    Message resp;
-    Message::STATUS current_status;
-    int current_task;
+    std::queue<int> task_queue;
 
-    std::stack<int> task_stack;
-
-    void Command(Message* rcvd, Message::STATUS status);
-    void Response(Message* rcvd, Message::STATUS status);
+    void Command(Message* rcvd);
+    void Response(Message* rcvd);
 
 public:
-    ServerResponse(int _serial_number);
+    ServerResponse(int serial_number);
     virtual ~ServerResponse();
-    void Processing(Message* rcvd, Message::STATUS status);
-    Message::STATUS GetStatus() { return current_status; }
-    int GetTask() { return current_task; }
-    Message GetResponce() { return resp; }
+    void Processing(Message* rcvd);
+
+
+    void SaveCommand(int task) {
+        task_queue.push(task);
+    }
 };
 
 #endif // SERVERRESPONSE_H

@@ -129,3 +129,22 @@ TEST_F(ClientResponseTest, busyClient) {
   EXPECT_EQ(correct.task,   to_server.task);
   EXPECT_EQ(correct.sender, to_server.sender);
 }
+
+TEST_F(ClientResponseTest, tasksFromServerDone) {
+
+  const int task = 5;
+
+  Message from_server(Message::ACTION::RESPONSE, Message::STATUS::DONE, task, s_serial_num);
+
+  ClientResponse c_response(c_serial_num, total_tasks_num, task);
+  c_response.Processing(&from_server);
+
+  auto to_server = c_response.GetResponce();
+
+  Message correct(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, task, c_serial_num);
+
+  EXPECT_EQ(correct.action, to_server.action);
+  EXPECT_EQ(correct.status, to_server.status);
+  EXPECT_EQ(correct.task,   to_server.task);
+  EXPECT_EQ(correct.sender, to_server.sender);
+}

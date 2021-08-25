@@ -1,10 +1,9 @@
 #include "ClientResponse.h"
 
-ClientResponse::ClientResponse(int _serial_number, int _number_of_tasks, int first_task)
-    : resp(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, first_task, _serial_number)
+ClientResponse::ClientResponse(int serial_number, int total_tasks, int first_task)
+    : BaseResponse(serial_number, total_tasks, first_task)
 {
-    task = first_task;
-    number_of_tasks = _number_of_tasks;
+    
 }
 
 ClientResponse::~ClientResponse() {
@@ -45,11 +44,15 @@ void ClientResponse::Response(Message* rcvd) {
         }
         case Message::STATUS::ACCEPTED: {
             std::cout << ">> Send to server task #" << ++task << std::endl;
-            if(rcvd->task == number_of_tasks - 1) {
+            if(rcvd->task == total_tasks - 1) {
 			    resp.Command(Message::STATUS::DONE, task);
             } else {
                 resp.Command(Message::STATUS::ACCEPTED, task);
             }
+			break;
+		}	
+        case Message::STATUS::DONE: {
+            std::cout << "Tasks done" << std::endl;
 			break;
 		}	
         default: { 

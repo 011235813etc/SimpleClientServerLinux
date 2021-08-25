@@ -67,7 +67,10 @@ UNIT_TARTGET	:= unit
 UNIT_SRC_DIR 	:= test
 UNIT			:=  $(BUILD_DIR)/$(UNIT_TARTGET)
 
-PROGRAMM_SOURCES := src/Client/ClientResponse.cpp src/Message/Message.cpp
+PROGRAMM_SOURCES := src/Client/ClientResponse.cpp \
+					src/Server/ServerResponse.cpp \
+					src/Message/Message.cpp \
+					src/BaseResponse/BaseResponse.cpp
 
 UNIT_SOURCES := $(shell find $(UNIT_SRC_DIR) -name '*.cpp') $(PROGRAMM_SOURCES)
 UNIT_OBJECTS := $(addprefix $(BUILD_DIR)/,$(UNIT_SOURCES:%.cpp=%.o))

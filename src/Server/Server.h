@@ -25,9 +25,6 @@ class Server {
 	std::stack<int> task_stack;
 	Message::STATUS status;
 	
-	// void CommandProcessing(Message* response);
-	// void ResponseProcessing(Message* response);
-
 public:
     explicit Server(uint32_t timeout_sec);
     virtual ~Server();

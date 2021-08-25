@@ -19,17 +19,11 @@ class Client {
     int number_of_tasks;
 
     std::unique_ptr<ClientResponse> reply;
-    
-    // void CommandProcessing(Message* response);
-    // void ResponseProcessing(Message* response);
-    // bool IsTaskListEmpty();
-
 public:
     explicit Client(Message::ACTION action=Message::ACTION::COMMAND);
     virtual ~Client();
     void Send();
     void Recv();
-    // void PrintBuf();
     void Send(Message& _msg);
     int GetSerialNumber() { return serial_number; }
 

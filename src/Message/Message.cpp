@@ -8,8 +8,6 @@ Message::Message(const ACTION _action, const STATUS _status, const int _task, co
 }
 
 Message::Message(const Message& other) {
-   std::cout << "In Message(const Message&)" << std::endl;
-
    if (this != &other) {   
         action 	= other.action;
         status 	= other.status;
@@ -19,8 +17,6 @@ Message::Message(const Message& other) {
 }
 
 Message& Message::operator=(Message&& other) {
-   std::cout << "In operator=(Message&&)" << std::endl;
-
    if (this != &other) {   
         action 	= other.action;
         status 	= other.status;
