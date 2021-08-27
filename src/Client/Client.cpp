@@ -1,18 +1,25 @@
+/*! \file Client.cpp
+    \brief Client class implementation.
+
+    This class using for exchange information with Server. 
+    Class include description socket connection with Server.
+*/
+
 #include "Client.h"
 
 int Client::serial_number = 0;
 
+/*! 
+    \brief Constructor with argument.
+    \param const ACTION _action - type of action for client or server.
+*/
 Client::Client(Message::ACTION action) {
 
-	//! initialize random seed
 	srand(time(NULL));
-	
-	//! generate serial number between 1 and 100 
-	serial_number = rand() % 100 + 1;
-	
-    number_of_tasks = 5;
+	serial_number = rand() % 100 + 1; 
+    total_tasks_numer = 5;
 
-    msg = Message();
+    msg = Message(); 
     msg.action = action;
     msg.sender = serial_number;
 
@@ -28,20 +35,33 @@ Client::Client(Message::ACTION action) {
         perror("connect");
         exit(2);
     }
-
-    reply = std::unique_ptr<ClientResponse>(new ClientResponse(serial_number, number_of_tasks));
+    reply = std::unique_ptr<ClientResponse>(new ClientResponse(serial_number, total_tasks_numer));
 }
 
+/*! 
+    \brief Class destructor.
+
+    Close socket.
+ */ 
 Client::~Client() {
     close(sock_descriptor);
 }
 
+/*! 
+    \brief Send message to Server.
+    \return void
+ */ 
 void Client::Send() {
     send(sock_descriptor, reinterpret_cast<void*>(&msg), sizeof(msg), 0);
 
 	std::cout << ">> Send message to server:" << std::endl;
 	std::cout << msg << std::endl << std::endl;
 }
+
+/*! 
+    \brief Receive message from Server.
+    \return void
+ */ 
 void Client::Recv() {
     recv(sock_descriptor, buf, sizeof(buf), 0);
     
@@ -52,10 +72,23 @@ void Client::Recv() {
     reply->Processing(response);
 }
 
+/*! 
+    \brief Send message to Server.
+    \param[in] Message& _msg - response message for Server.
+    \return void
+*/ 
 void Client::Send(Message& _msg) {
     send(sock_descriptor, reinterpret_cast<void*>(&_msg), sizeof(_msg), 0);
 //    send(sock_descriptor, msg, sizeof(msg), 0);
 
 	std::cout << ">> Send message to server:" << std::endl;
 	std::cout << _msg << std::endl << std::endl;
+}
+
+/*! 
+    \brief Get Client serial number.
+    \return int - serial number.
+*/ 
+int Client::GetSerialNumber()  {
+    return serial_number;
 }

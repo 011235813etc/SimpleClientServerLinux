@@ -1,21 +1,29 @@
+/*! \file main.cpp
+	\brief Client application entry point.
+*/
 #include <iostream>
 #include <memory>
 #include "../TaskList/TaskList.h"
 #include "Client.h"
 
+/*! 
+    \brief %Client application begin.
+    \param int argc -
+    \param char* argv[] - 
+    \return 0.
+*/ 
+int main(int argc, char* argv[]) {
 
-int main(int arg, char* args[]) {
-
-//	std::unique_ptr<TaskList> t_list(new TaskList(args[1]));
+//	std::unique_ptr<TaskList> t_list(new TaskList(argv[1]));
 //	(*t_list)[0];
 //	(*t_list)[1];
 
-	Message::ACTION action = (args[1] != NULL) ? (Message::ACTION::COMMAND) : (Message::ACTION::RESPONSE);
+	Message::ACTION action = (argv[1] != NULL) ? (Message::ACTION::COMMAND) : (Message::ACTION::RESPONSE);
     std::unique_ptr<Client> client(new Client(action));
-    
+
     Message message;
     
-    if(args[1] != NULL) {
+    if(argv[1] != NULL) {
     	message = Message(Message::ACTION::COMMAND, 
                             Message::STATUS::READY, 
                             128, 
@@ -28,7 +36,7 @@ int main(int arg, char* args[]) {
     } 
     
     client->Send(message);
-    client->Recv();
+    client->Recv(); 
     // client->PrintBuf();
 
     return 0;

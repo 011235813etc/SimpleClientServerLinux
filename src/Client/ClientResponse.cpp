@@ -1,15 +1,28 @@
+/*! \file ClientResponse.cpp
+    \brief ClientResponse class implementation.
+
+    This class describe preparing response or command for Server.
+    ClientResponse derived BaseResponse.
+*/
+
 #include "ClientResponse.h"
 
+/*! 
+    \brief Constructor with arguments.
+    \param int serial_number - Client serial number
+    \param int total_tasks - Total number of tasks.
+    \param int first_task - Start value of the task.
+*/ 
 ClientResponse::ClientResponse(int serial_number, int total_tasks, int first_task)
     : BaseResponse(serial_number, total_tasks, first_task)
 {
     
 }
 
-ClientResponse::~ClientResponse() {
-
-}
-
+/*! 
+    \brief Processing message from Server.
+    \param Message* rcvd - Pointer to received message from Server.
+*/ 
 void ClientResponse::Processing(Message* rcvd) {
 
     if(status == Message::STATUS::BUSY) {
@@ -29,12 +42,20 @@ void ClientResponse::Processing(Message* rcvd) {
     }
 }
 
+/*! 
+    \brief Preparing command message to Server.
+    \param Message* rcvd - Pointer to received message from Server.
+*/ 
 void ClientResponse::Command(Message* rcvd) {
     resp.Response(Message::STATUS::ACCEPTED, rcvd->task);
     task    = rcvd->task;
     status  = Message::STATUS::BUSY;
 }
 
+/*! 
+    \brief Preparing response message to Server.
+    \param Message* rcvd - Pointer to received message from Server.
+*/ 
 void ClientResponse::Response(Message* rcvd) {
     switch(rcvd->status) {
         case Message::STATUS::BUSY: {

@@ -57,10 +57,14 @@ default:
 
 .PHONY: all
 all: clean default
+#all: docs
 
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
+
+docs:
+	@doxygen
 
 ###############################################################################
 UNIT_TARTGET	:= unit

@@ -1,16 +1,36 @@
+/*! \file ServerResponse.cpp
+    \brief ServerResponse class implementation.
+
+    This class describe preparing response for Client.
+*/
+
 #include "ServerResponse.h"
 
+/*! 
+    \brief Constructor with argument.
+    \param int serial_number - Client serial number
+*/ 
 ServerResponse::ServerResponse(int serial_number)
     : BaseResponse(serial_number, 0, 0)
 {
 }
 
+/*! 
+    \brief Class destructor.
+
+	Free the task queue.
+*/
 ServerResponse::~ServerResponse() {
 	while(!task_queue.empty())	{
 		task_queue.pop();
 	}
 }
 
+/*! 
+    \brief Processing message from Client.
+    \param Message* rcvd - Pointer to received message from Client.
+	\return void.
+*/ 
 void ServerResponse::Processing(Message* rcvd) {
 	switch(rcvd->action) {
 	    case Message::ACTION::COMMAND: {
@@ -25,6 +45,11 @@ void ServerResponse::Processing(Message* rcvd) {
 	}
 }
 
+/*! 
+    \brief Preparing command message to Client.
+    \param Message* rcvd - Pointer to received message from Client.
+	\return void.
+*/ 
 void ServerResponse::Command(Message* rcvd) {
     
     switch(rcvd->status) {
@@ -57,6 +82,11 @@ void ServerResponse::Command(Message* rcvd) {
     }
 }
 
+/*! 
+    \brief Preparing response message to Client.
+    \param Message* rcvd - Pointer to received message from Client.
+	\return void.
+*/ 
 void ServerResponse::Response(Message* rcvd) {
     switch(rcvd->status) {
        	case Message::STATUS::DONE:
@@ -84,4 +114,13 @@ void ServerResponse::Response(Message* rcvd) {
 			break;
 		}
     }
+}
+
+/*! 
+    \brief Saving commands from Client.
+    \param int task - task number.
+	\return void.
+*/ 
+void ServerResponse::SaveCommand(int task) {
+	task_queue.push(task);
 }

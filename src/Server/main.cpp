@@ -1,10 +1,17 @@
+/*! \file main.cpp
+	\brief Server application entry point.
+*/
 #include <iostream>
 #include <memory>
 #include "Server.h"
 
 using namespace std;
 
-int main(int arg, char* args[]) {
+/*! 
+    \brief %Server application begin. 
+    \return 0.
+*/ 
+int main() {
 
 	std::cout << "Server is launched" << std::endl;
 

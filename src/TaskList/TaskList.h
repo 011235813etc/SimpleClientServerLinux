@@ -1,3 +1,9 @@
+/*! \file TaskList.h
+    \brief TaskList class declaration.
+
+    Class using for save commands from file and get them from index.
+*/
+
 #ifndef TASKLIST_H
 #define TASKLIST_H
 
@@ -9,17 +15,14 @@
 #include <iterator>
 #include <cstdlib>
 
-class TaskList
-{
-    public:
-        TaskList(char* path);
-        virtual ~TaskList();
-        void operator[](unsigned int idx);
+class TaskList {
 
-    protected:
-
-    private:
-    std::vector<std::string> commands;
+    std::vector<std::string> commands;  //!< Using for save commands from file.
+public:
+    TaskList(char* path);
+    //! \brief Class destructor.
+    virtual ~TaskList() = default;
+    void operator[](unsigned int idx);
 };
 
 #endif // TASKLIST_H

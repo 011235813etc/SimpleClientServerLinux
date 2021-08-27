@@ -1,6 +1,16 @@
+/*! \file TaskList.cpp
+    \brief TaskList class implementation.
+
+    Class using for save commands from file and get them from index.
+*/
+
 #include "TaskList.h"
 
-
+/*! 
+    \brief Constructor with argument.
+    \param char* path - path to the file with commands.
+    \return void.
+*/ 
 TaskList::TaskList(char* path)
 {
     using namespace std;
@@ -35,11 +45,12 @@ TaskList::TaskList(char* path)
     }
 }
 
-TaskList::~TaskList()
-{
-    //dtor
-}
 
+/*! 
+    \brief Get command from vector by index.
+    \param unsigned int idx - command index.
+    \return void.
+*/
 void TaskList::operator[](unsigned int idx) {
     if(idx < commands.size()) {
         if(system(commands[idx].c_str())) {

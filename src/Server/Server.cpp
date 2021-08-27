@@ -1,12 +1,26 @@
+/*! \file Server.cpp
+    \brief Server class implementation.
+
+    This class describe Server.
+    Class include description socket connection with Client.
+*/
+
 #include "Server.h"
 
+/*! 
+    \brief Constructor with argument.
+    \param uint32_t timeout_sec - timeout for waiting response from Client.
+*/ 
 Server::Server(uint32_t timeout_sec) {
-
+	
 	task = 0;
 
-	timeout.tv_sec = timeout_sec;
+	// Using only with seconds value,
+	// because in this case milliseconds not important for me.
+	timeout.tv_sec = timeout_sec; 
 	timeout.tv_usec = 0;
 
+	// Create lisener socket descriptor.
 	listener = socket(AF_INET, SOCK_STREAM, 0);
 	if(listener < 0) 
 	{
@@ -14,28 +28,41 @@ Server::Server(uint32_t timeout_sec) {
 		exit(1);
 	}
 
+	// Create nonblocking sockets.
 	fcntl(listener, F_SETFL, O_NONBLOCK);
 	
-	
+	// Create socket address.
 	soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 	
+	// Link to a socket.
 	if(bind(listener, (struct sockaddr*)soc_addr->GetPtr(), soc_addr->GetSize()) < 0)
 	{
 		perror("bind");
 		exit(2);
 	}
-
+	// Waiting for requests.
 	listen(listener, 2);
 
+	// Create ServerResponse class object for save response message for Client.
 	reply = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
 	status = Message::STATUS::READY;
 }
 
+/*! 
+    \brief Class destructor.
+
+	Close socket.
+*/ 
 Server::~Server() {
     close(listener);
 }
 
-
+/*! 
+    \brief Processing Client response.
+    \param std::set<int>& clients - set with clients.
+    \param fd_set& readset - socket descriptor.
+	\return void.
+*/
 void Server::CreateSocketQueue(std::set<int>& clients, fd_set& readset) {
 	using namespace std;
 	
@@ -47,11 +74,16 @@ void Server::CreateSocketQueue(std::set<int>& clients, fd_set& readset) {
 	}
 }
 
-
+/*! 
+    \brief Processing Client response.
+    \param std::set<int>& clients - set with clients.
+    \param fd_set& readset - socket descriptor.
+	\return void.
+*/
 void Server::WaitEvent(std::set<int>& clients, fd_set& readset) {
 	using namespace std;
 	
-	//Ждем события в одном из сокетов
+	//! Waiting events on one of sockets
 	int mx = max(listener, *max_element(clients.begin(), clients.end()));
 	if(select(mx+1, &readset, NULL, NULL, &timeout) <= 0) {
 		perror("select");
@@ -59,10 +91,16 @@ void Server::WaitEvent(std::set<int>& clients, fd_set& readset) {
 	}
 }
 
+/*! 
+    \brief Processing Client response.
+    \param[in] std::set<int>& clients - clients set.
+    \param[in] fd_set& readset - socket descriptor.
+	\return void.
+*/
 void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
-	//определяем тип события и выполняем соответствующие действия
+	// Determine the type of event
 	if(FD_ISSET(listener, &readset)) {
-		//поступил новый запрос на соединение, используем accept
+		// Processing connection request
 		int sock = accept(listener, NULL, NULL);
 		if(sock < 0) {
 			perror("accept");
@@ -73,8 +111,30 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 	}
 }
 
+/*! 
+    \brief Processing Client response.
+    \param Message* response - pointer to the buffer.
+    \param int bytes_read - the size of the received message.
+	\return void.
+*/
 void Server::DataProcessing(Message* response, int bytes_read) {
 
 	reply->Processing(response);
 }
 
+/*! 
+    \brief Set new task
+    \param uint8_t task - new task.
+    \param void.
+*/ 
+void Server::SetTask(uint8_t task) { 
+	this->task = task;	
+}
+
+/*! 
+    \brief Get current task.
+    \return int task - current task.
+*/ 
+int Server::GetTask() { 
+	return task;	
+}

@@ -1,21 +1,45 @@
+/*! \file Message.cpp
+    \brief Message class implementation.
+
+    This class describe message format using for exchange between Client and Server.
+*/
 #include "Message.h"
 
+/*! 
+    \brief Default constructor.
+*/
 Message::Message():action(ACTION::RESPONSE), status(STATUS::READY), task(0), sender(0)  {
 }
-    
+
+/*! 
+    \brief Constructor with arguments.
+    \param const ACTION _action - type of action for client or server.
+    \param STATUS _status - current object status.
+    \param const int _task - current task.
+    \param const int _sender - serial number of sender.
+*/ 
 Message::Message(const ACTION _action, const STATUS _status, const int _task, const int _sender)
         :action(_action), status(_status), task(_task), sender(_sender) {
 }
 
+/*! 
+    \brief Сopy constructor.
+    \param const Message& other - other object of class Message.
+*/ 
 Message::Message(const Message& other) {
-   if (this != &other) {   
+    if (this != &other) {   
         action 	= other.action;
         status 	= other.status;
         task 	= other.task;
         sender 	= other.sender;
-   }
+    }
 }
 
+/*! 
+    \brief Copy assignment operator.
+    \param const Message& other - other object of class Message. 
+    \return Message& - current object
+*/
 Message& Message::operator=(Message&& other) {
    if (this != &other) {   
         action 	= other.action;
@@ -26,25 +50,48 @@ Message& Message::operator=(Message&& other) {
    return *this;
 }
 
-bool Message::operator==(const Message& msg) {
-    return (this->action == msg.action  ||
-            this->status == msg.status  ||
-            this->task  == msg.task     ||
-            this->sender == msg.sender  );
+/*! 
+    \brief Compare fields of class Message.
+    \param const Message& other - compared object of class Message.  
+    \return bool - comparison result.
+*/
+bool Message::operator==(const Message& other) {
+    return (this->action    == other.action  ||
+            this->status    == other.status  ||
+            this->task      == other.task    ||
+            this->sender    == other.sender  );
 }
 
+/*! 
+    \brief A response preparation.
+    \param Message::STATUS _status - current object status.
+    \param int _task - the task for processing.
+    \return void.
+*/
 void Message::Response(Message::STATUS _status, int _task) {
 	action = ACTION::RESPONSE;
 	status = _status;
     task   = _task;
 }
 
+/*! 
+    \brief A command preparation.
+    \param Message::STATUS _status - current object status.
+    \param int _task - the task for processing.
+    \return void.
+*/
 void Message::Command(Message::STATUS _status, int _task) {
 	action = ACTION::COMMAND;
 	status = _status;
     task   = _task;
 }
 
+/*! 
+    \brief Print class Message to the ostream.
+    \param ostream& os - ostream objects reference.
+    \param const Message& msg - printing object of class Message.
+    \return ostream& - ostream objects reference.
+*/
 std::ostream& operator<<(std::ostream& os, const Message& msg) {
 
     using namespace std;
@@ -56,6 +103,12 @@ std::ostream& operator<<(std::ostream& os, const Message& msg) {
     return os;
 }
 
+/*! 
+    \brief Print enum class ACTION to the ostream.
+    \param ostream& os - ostream objects reference.
+    \param const Message::ACTION& action - printing object of enum class ACTION.
+    \return ostream& - ostream objects reference.
+*/
 std::ostream& operator<<(std::ostream& os, const Message::ACTION& action) {
 
     os << "action: ";
@@ -67,6 +120,12 @@ std::ostream& operator<<(std::ostream& os, const Message::ACTION& action) {
     return os;
 }
 
+/*! 
+    \brief Print enum class STATUS to the ostream.
+    \param ostream& os - ostream objects reference.
+    \param const Message::STATUS& status - printing object of enum class STATUS.
+    \return ostream& - ostream objects reference.
+*/
 std::ostream& operator<<(std::ostream& os, const Message::STATUS& status) {
 
     os << "status: ";
@@ -80,3 +139,30 @@ std::ostream& operator<<(std::ostream& os, const Message::STATUS& status) {
     }
     return os;
 }
+
+/*! 
+    \brief Set new status (used for unit tests).
+    \param const STATUS _status - new status.
+    \return void.
+*/
+void Message::SetStatus(const STATUS _status)	{ 
+    status 	= _status; 	
+}   
+
+/*! 
+    \brief Set new action (used for unit tests).
+    \param const ACTION _action - new action.
+    \return void.
+*/
+void Message::SetAction(const ACTION _action)	{ 
+    action 	= _action; 	
+}   
+
+/*! 
+    \brief Set new task (used for unit tests).
+    \param const int _task - new task.
+    \return void.
+*/
+void Message::SetTask(const int _task)			{ 
+    task = _task; 	
+}   
