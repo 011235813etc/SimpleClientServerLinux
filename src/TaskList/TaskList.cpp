@@ -3,11 +3,14 @@
 
     Class using for save commands from file and get them from index.
 */
-
 #include "TaskList.h"
 
 /*! 
     \brief Constructor with argument.
+
+    Creates a list of task and save him to std::vector.
+    Comments like "//" will be ignored.
+
     \param char* path - path to the file with commands.
     \return void.
 */ 
@@ -43,8 +46,8 @@ TaskList::TaskList(char* path)
             }
         }
     }
+    file.close();
 }
-
 
 /*! 
     \brief Get command from vector by index.
@@ -59,4 +62,12 @@ void TaskList::operator[](unsigned int idx) {
             std::cout << "Task #" << idx << " - successfull!" << std::endl;
         }
     }
+}
+
+/*! 
+    \brief Get command count.
+    \return size_t - command count
+*/
+size_t TaskList::size() {
+    return commands.size();
 }

@@ -23,6 +23,7 @@ public:
     //! \brief Class destructor.
     virtual ~TaskList() = default;
     void operator[](unsigned int idx);
+    size_t size();
 };
 
 #endif // TASKLIST_H
