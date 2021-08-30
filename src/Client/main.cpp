@@ -3,6 +3,7 @@
 */
 #include <iostream>
 #include <memory>
+#include <cstring> 
 #include "../TaskList/TaskList.h"
 #include "Client.h"
 
@@ -14,28 +15,29 @@
 */ 
 int main(int argc, char* argv[]) {
 
+
+
 //	std::unique_ptr<TaskList> t_list(new TaskList(argv[1]));
 //	(*t_list)[0];
 //	(*t_list)[1];
 
-	Message::ACTION action = (argv[1] != NULL) ? (Message::ACTION::COMMAND) : (Message::ACTION::RESPONSE);
+
+    // bool isLoader = (argv[2] != "loader");
+    bool isLoader = (std::strcmp(argv[2], "loader") == 0);
+
+	Message::ACTION action = (isLoader) ? (Message::ACTION::COMMAND) : (Message::ACTION::RESPONSE);
     std::unique_ptr<Client> client(new Client(action));
 
     Message message;
     
-    if(argv[1] != NULL) {
-    	message = Message(Message::ACTION::COMMAND, 
-                            Message::STATUS::READY, 
-                            128, 
-                            client->GetSerialNumber());
+    if(isLoader) {
+        client->Send();
+        client->Recv(); 
+        //надо тут формировать команды из TaskList.
     } else {
-    	message = Message(Message::ACTION::RESPONSE, 
-                            Message::STATUS::BUSY, 
-                            0, 
-                            client->GetSerialNumber());
     } 
     
-    client->Send(message);
+    client->Send();
     client->Recv(); 
     // client->PrintBuf();
 

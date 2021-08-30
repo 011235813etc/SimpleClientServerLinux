@@ -5,6 +5,7 @@
 #define MESSAGE_H
 #include <iostream>
 #include <string>
+#include <climits>
 
 class Message {
 public:
@@ -37,9 +38,11 @@ public:
     STATUS status;  //!< Variable for save current status.
     int task;       //!< Variable for save current task. 
     int sender;     //!< Variable for save serial number of sender.
+    static const int launch_task = INT_MAX; //!< Variable for launch.
+    static const int done_task   = INT_MIN; //!< Variable for stop.
 
     explicit Message(); 
-    Message(const ACTION _action, const STATUS _status, const int _task, const int _sender);
+    Message(const ACTION _action, const STATUS status, const int task, const int sender);
     Message(const Message& other);
     //! \brief Class destructor.
     ~Message() = default;
@@ -49,8 +52,8 @@ public:
     void SetAction(const ACTION _action);
     void SetTask(const int _task);
 
-    void Response(Message::STATUS _status, int _task);
-    void Command(Message::STATUS _status, int _task);
+    void Response(Message::STATUS status, int task);
+    void Command(Message::STATUS status, int task);
 };
 
 #endif // MESSAGE_H

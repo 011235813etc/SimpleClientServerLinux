@@ -63,7 +63,10 @@ TEST_F(ClientResponseTest, passCommandForBusyServer) {
 
   auto to_server = c_response.GetResponce();
 
-  Message correct(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, task, c_serial_num);
+
+			// response.Response(Message::STATUS::READY, from_client->task);
+
+  Message correct(Message::ACTION::RESPONSE, Message::STATUS::READY, task, c_serial_num);
 
   EXPECT_EQ(correct.action, to_server.action);
   EXPECT_EQ(correct.status, to_server.status);
@@ -102,7 +105,7 @@ TEST_F(ClientResponseTest, busyServer) {
 
   auto to_server = c_response.GetResponce();
 
-  Message correct(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, task, c_serial_num);
+  Message correct(Message::ACTION::RESPONSE, Message::STATUS::READY, task, c_serial_num);
 
   EXPECT_EQ(correct.action, to_server.action);
   EXPECT_EQ(correct.status, to_server.status);
@@ -141,10 +144,13 @@ TEST_F(ClientResponseTest, tasksFromServerDone) {
 
   auto to_server = c_response.GetResponce();
 
-  Message correct(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, task, c_serial_num);
+  Message correct(Message::ACTION::RESPONSE, Message::STATUS::DONE, Message::done_task, c_serial_num);
 
   EXPECT_EQ(correct.action, to_server.action);
   EXPECT_EQ(correct.status, to_server.status);
   EXPECT_EQ(correct.task,   to_server.task);
   EXPECT_EQ(correct.sender, to_server.sender);
+
+  EXPECT_EQ(c_response.GetStatus(), Message::STATUS::DONE);
+  EXPECT_EQ(c_response.GetTask(),  (int)Message::done_task);
 }

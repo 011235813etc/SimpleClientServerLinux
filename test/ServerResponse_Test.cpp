@@ -25,6 +25,7 @@ TEST_F(ServerResponseTest, nextCommandForClient) {
   ServerResponse s_response(s_serial_num);
   s_response.SaveCommand(task + 1);
   s_response.SaveCommand(task + 2);
+  s_response.SetCommandsLoadComplete(true);
   s_response.Processing(&from_client);
 
   auto to_client = s_response.GetResponce();

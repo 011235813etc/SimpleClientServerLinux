@@ -23,7 +23,7 @@ class Server {
 	int task;									//!< Using for save current task number.
 	static const int serial_number = 19700101; 	//!< Server serial number.
 
-	std::unique_ptr<ServerResponse> reply; 		//!< Using for save response message for Client.
+	std::unique_ptr<ServerResponse> to_client; 	//!< Using for save response message for Client.
 	std::stack<int> task_stack;					//!< Using for save tasks from Client.
 	Message::STATUS status;						//!< Current Server status.
 	
@@ -36,7 +36,7 @@ public:
     void AddNewClientsRequests(std::set<int>& clients, fd_set& readset);
 	void SetTask(uint8_t _task);
 	int  GetTask();
-	void DataProcessing(Message* buf, int bytes_read);
+	void DataProcessing(Message* from_client);
 };
 
 #endif // SERVER_H

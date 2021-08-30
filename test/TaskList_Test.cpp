@@ -32,7 +32,7 @@ public:
 
 TEST_F(TaskListTest, emptyTaskList) {
 
-  char path[] = "./tasks/empty_task_list.txt";
+  char path[] = "./tasks_for_TaskList/empty_task_list.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
 
@@ -41,7 +41,7 @@ TEST_F(TaskListTest, emptyTaskList) {
 
 TEST_F(TaskListTest, taskListWithTwoTasks) {
 
-  char path[] = "./tasks/task_list_with_two_tasks.txt";
+  char path[] = "./tasks_for_TaskList/task_list_with_two_tasks.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
 
@@ -50,16 +50,17 @@ TEST_F(TaskListTest, taskListWithTwoTasks) {
 
 TEST_F(TaskListTest, taskListWithComments) {
 
-  char path[] = "./tasks/task_list_with_comments.txt";
+  char path[] = "./tasks_for_TaskList/task_list_with_comments.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
+  std::cout << "task list size is: " << (int)t_list->size() << std::endl;
 
   EXPECT_EQ(2, (int)t_list->size());
 }
 
 TEST_F(TaskListTest, tasksOutput) {
 
-  char path[] = "./tasks/task_list.txt";
+  char path[] = "./tasks_for_TaskList/task_list.txt";
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
 
   testing::internal::CaptureStdout();
@@ -75,7 +76,7 @@ TEST_F(TaskListTest, tasksOutput) {
 
 TEST_F(TaskListTest, tasksExecuteResult) {
 
-  char path[] = "./tasks/task_list.txt";
+  char path[] = "./tasks_for_TaskList/task_list.txt";
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
 
   testing::internal::CaptureStdout();

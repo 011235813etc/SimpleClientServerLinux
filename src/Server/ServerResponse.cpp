@@ -28,17 +28,17 @@ ServerResponse::~ServerResponse() {
 
 /*! 
     \brief Processing message from Client.
-    \param Message* rcvd - Pointer to received message from Client.
+    \param Message* from_client - Pointer to received message from Client.
 	\return void.
 */ 
-void ServerResponse::Processing(Message* rcvd) {
-	switch(rcvd->action) {
+void ServerResponse::Processing(Message* from_client) {
+	switch(from_client->action) {
 	    case Message::ACTION::COMMAND: {
-	    	Command(rcvd);
+	    	Command(from_client);
 	    	break;
 	    }
         case Message::ACTION::RESPONSE: {
-	    	Response(rcvd);
+	    	Response(from_client);
         	break;
         }
         default: std::cout << "UNKNOWN ACTION TYPE" << std::endl; break;
@@ -47,16 +47,17 @@ void ServerResponse::Processing(Message* rcvd) {
 
 /*! 
     \brief Preparing command message to Client.
-    \param Message* rcvd - Pointer to received message from Client.
+    \param Message* from_client - Pointer to received message from Client.
 	\return void.
 */ 
-void ServerResponse::Command(Message* rcvd) {
+void ServerResponse::Command(Message* from_client) {
     
-    switch(rcvd->status) {
+    switch(from_client->status) {
 		case Message::STATUS::DONE: {
-			resp.Response(Message::STATUS::ACCEPTED, rcvd->task);
-			SaveCommand(rcvd->task);
-			std::cout << "Server is ready for execute tasks!" << std::endl; 			
+			response.Response(Message::STATUS::ACCEPTED, from_client->task);
+			SaveCommand(from_client->task);
+			std::cout << "Server is ready for execute tasks!" << std::endl;
+			isAllCommandsReceived = true;			
 			break;
 		}
 		case Message::STATUS::ERROR: {
@@ -71,8 +72,8 @@ void ServerResponse::Command(Message* rcvd) {
         case Message::STATUS::BUSY:
         case Message::STATUS::READY: 
         case Message::STATUS::ACCEPTED: {
-			resp.Response(Message::STATUS::ACCEPTED, rcvd->task);
-			SaveCommand(rcvd->task);
+			response.Response(Message::STATUS::ACCEPTED, from_client->task);
+			SaveCommand(from_client->task);
 			break;
 		}
         default: { 
@@ -84,25 +85,29 @@ void ServerResponse::Command(Message* rcvd) {
 
 /*! 
     \brief Preparing response message to Client.
-    \param Message* rcvd - Pointer to received message from Client.
+    \param Message* from_client - Pointer to received message from Client.
 	\return void.
 */ 
-void ServerResponse::Response(Message* rcvd) {
-    switch(rcvd->status) {
+void ServerResponse::Response(Message* from_client) {
+    switch(from_client->status) {
        	case Message::STATUS::DONE:
 		case Message::STATUS::READY: {
-			if(!task_queue.empty()) {
-				std::cout << ">> Set to client task #" << task_queue.front() << std::endl;
-				resp.Command(Message::STATUS::READY, task_queue.front());
-				task_queue.pop();
+			if(isAllCommandsReceived) {
+				if(!task_queue.empty()) {
+					std::cout << ">> Set to client task #" << task_queue.front() << std::endl;
+					response.Command(Message::STATUS::READY, task_queue.front());
+					task_queue.pop();
+				} else {
+					std::cout << "Task stack empty" << std::endl;
+					response.Response(Message::STATUS::DONE, from_client->task);
+				}
 			} else {
-				std::cout << "Task stack empty" << std::endl;
-				resp.Response(Message::STATUS::DONE, rcvd->task);
+				response.Response(Message::STATUS::BUSY, Message::launch_task);
 			}
 			break;
 		}	
 		case Message::STATUS::BUSY: {
-			resp.Response(Message::STATUS::ACCEPTED, task_queue.front());
+			response.Response(Message::STATUS::ACCEPTED, task_queue.front());
 			break;
 		}
 		case Message::STATUS::ACCEPTED:	{ 
@@ -123,4 +128,13 @@ void ServerResponse::Response(Message* rcvd) {
 */ 
 void ServerResponse::SaveCommand(int task) {
 	task_queue.push(task);
+}
+
+/*! 
+    \brief Set commands load complete status (use only unit tests).
+    \param bool complete - commands load status.
+	\return void.
+*/ 
+void ServerResponse::SetCommandsLoadComplete(bool complete) {
+	isAllCommandsReceived = complete;
 }

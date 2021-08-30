@@ -19,9 +19,7 @@ Client::Client(Message::ACTION action) {
 	serial_number = rand() % 100 + 1; 
     total_tasks_numer = 5;
 
-    msg = Message(); 
-    msg.action = action;
-    msg.sender = serial_number;
+    msg = Message(action, Message::STATUS::READY, Message::launch_task, serial_number); 
 
     soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 
@@ -35,7 +33,7 @@ Client::Client(Message::ACTION action) {
         perror("connect");
         exit(2);
     }
-    reply = std::unique_ptr<ClientResponse>(new ClientResponse(serial_number, total_tasks_numer));
+    to_server = std::unique_ptr<ClientResponse>(new ClientResponse(serial_number, total_tasks_numer));
 }
 
 /*! 
@@ -65,16 +63,16 @@ void Client::Send() {
 void Client::Recv() {
     recv(sock_descriptor, buf, sizeof(buf), 0);
     
-	auto response = reinterpret_cast<Message*>(buf);
+	auto from_server = reinterpret_cast<Message*>(buf);
     std::cout << "<< Received message from server:" << std::endl;
-	std::cout << response[0] << std::endl;
+	std::cout << from_server[0] << std::endl;
 
-    reply->Processing(response);
+    to_server->Processing(from_server);
 }
 
 /*! 
     \brief Send message to Server.
-    \param[in] Message& _msg - response message for Server.
+    \param[in] Message& _msg - from_server message for Server.
     \return void
 */ 
 void Client::Send(Message& _msg) {

@@ -21,20 +21,20 @@ ClientResponse::ClientResponse(int serial_number, int total_tasks, int first_tas
 
 /*! 
     \brief Processing message from Server.
-    \param Message* rcvd - Pointer to received message from Server.
+    \param Message* from_client - Pointer to received message from Server.
 */ 
-void ClientResponse::Processing(Message* rcvd) {
+void ClientResponse::Processing(Message* from_client) {
 
     if(status == Message::STATUS::BUSY) {
-        resp.Response(status, rcvd->task);
+        response.Response(status, from_client->task);
     } else {
-        switch(rcvd->action) {
+        switch(from_client->action) {
             case Message::ACTION::COMMAND: {
-                Command(rcvd);
+                Command(from_client);
                 break;
             }
             case Message::ACTION::RESPONSE: {
-                Response(rcvd);
+                Response(from_client);
                 break;
             }
             default: std::cout << "UNKNOWN ACTION TYPE" << std::endl; break;
@@ -44,36 +44,43 @@ void ClientResponse::Processing(Message* rcvd) {
 
 /*! 
     \brief Preparing command message to Server.
-    \param Message* rcvd - Pointer to received message from Server.
+    \param Message* from_client - Pointer to received message from Server.
 */ 
-void ClientResponse::Command(Message* rcvd) {
-    resp.Response(Message::STATUS::ACCEPTED, rcvd->task);
-    task    = rcvd->task;
+void ClientResponse::Command(Message* from_client) {
+    response.Response(Message::STATUS::ACCEPTED, from_client->task);
+    task    = from_client->task;
     status  = Message::STATUS::BUSY;
 }
 
 /*! 
     \brief Preparing response message to Server.
-    \param Message* rcvd - Pointer to received message from Server.
+    \param Message* from_client - Pointer to received message from Server.
 */ 
-void ClientResponse::Response(Message* rcvd) {
-    switch(rcvd->status) {
+void ClientResponse::Response(Message* from_client) {
+    switch(from_client->status) {
         case Message::STATUS::BUSY: {
-            //TODO need to repeat command after few seconds
-			resp.Response(Message::STATUS::ACCEPTED, rcvd->task);
+            //waiting 1 sec
+            const uint8_t one_sec = 1;
+            std::chrono::seconds dura(one_sec);
+            std::this_thread::sleep_for(dura);
+			response.Response(Message::STATUS::READY, from_client->task);
+            //TODO make limit for request
 			break;
         }
         case Message::STATUS::ACCEPTED: {
             std::cout << ">> Send to server task #" << ++task << std::endl;
-            if(rcvd->task == total_tasks - 1) {
-			    resp.Command(Message::STATUS::DONE, task);
+            if(from_client->task == total_tasks - 1) {
+			    response.Command(Message::STATUS::DONE, task);
             } else {
-                resp.Command(Message::STATUS::ACCEPTED, task);
+                response.Command(Message::STATUS::ACCEPTED, task);
             }
 			break;
 		}	
         case Message::STATUS::DONE: {
             std::cout << "Tasks done" << std::endl;
+            response.Response(Message::STATUS::DONE, Message::done_task);
+            status = Message::STATUS::DONE;     
+            task = Message::done_task;                   
 			break;
 		}	
         default: { 

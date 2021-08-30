@@ -44,7 +44,7 @@ Server::Server(uint32_t timeout_sec) {
 	listen(listener, 2);
 
 	// Create ServerResponse class object for save response message for Client.
-	reply = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
+	to_client = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
 	status = Message::STATUS::READY;
 }
 
@@ -113,13 +113,11 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 
 /*! 
     \brief Processing Client response.
-    \param Message* response - pointer to the buffer.
-    \param int bytes_read - the size of the received message.
+    \param Message* from_client - pointer to the buffer.
 	\return void.
 */
-void Server::DataProcessing(Message* response, int bytes_read) {
-
-	reply->Processing(response);
+void Server::DataProcessing(Message* from_client) {
+	to_client->Processing(from_client);
 }
 
 /*! 

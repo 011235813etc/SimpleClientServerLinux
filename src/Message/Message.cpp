@@ -64,14 +64,14 @@ bool Message::operator==(const Message& other) {
 
 /*! 
     \brief A response preparation.
-    \param Message::STATUS _status - current object status.
-    \param int _task - the task for processing.
+    \param Message::STATUS status - current object status.
+    \param int task - the task for processing.
     \return void.
 */
-void Message::Response(Message::STATUS _status, int _task) {
+void Message::Response(Message::STATUS status, int task) {
 	action = ACTION::RESPONSE;
-	status = _status;
-    task   = _task;
+	this->status = status;
+    this->task   = task;
 }
 
 /*! 
@@ -80,10 +80,10 @@ void Message::Response(Message::STATUS _status, int _task) {
     \param int _task - the task for processing.
     \return void.
 */
-void Message::Command(Message::STATUS _status, int _task) {
+void Message::Command(Message::STATUS status, int task) {
 	action = ACTION::COMMAND;
-	status = _status;
-    task   = _task;
+	this->status = status;
+    this->task   = task;
 }
 
 /*! 
@@ -145,8 +145,8 @@ std::ostream& operator<<(std::ostream& os, const Message::STATUS& status) {
     \param const STATUS _status - new status.
     \return void.
 */
-void Message::SetStatus(const STATUS _status)	{ 
-    status 	= _status; 	
+void Message::SetStatus(const STATUS status)	{ 
+    this->status 	= status; 	
 }   
 
 /*! 
@@ -154,8 +154,8 @@ void Message::SetStatus(const STATUS _status)	{
     \param const ACTION _action - new action.
     \return void.
 */
-void Message::SetAction(const ACTION _action)	{ 
-    action 	= _action; 	
+void Message::SetAction(const ACTION action)	{ 
+    this->action 	= action; 	
 }   
 
 /*! 

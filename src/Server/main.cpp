@@ -15,7 +15,9 @@ int main() {
 
 	std::cout << "Server is launched" << std::endl;
 
-    std::unique_ptr<Server> server(new Server(15));
+	const uint8_t timeout_sec = 15;
+
+    std::unique_ptr<Server> server(new Server(timeout_sec));
     
     int bytes_read;
     
@@ -43,7 +45,7 @@ int main() {
 					clients.erase(*it);
 					continue;
 				}
-				server->DataProcessing(buf, bytes_read);
+				server->DataProcessing(buf);
 				//отправляем данные обрано клиенту
 				send(*it, buf, sizeof(Message), 0);
 			}
