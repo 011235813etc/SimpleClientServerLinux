@@ -14,7 +14,7 @@
 BaseResponse::BaseResponse(int serial_number, int total_tasks, int first_task)
     : response(Message::ACTION::RESPONSE, Message::STATUS::READY, first_task, serial_number)
 {
-    task = first_task;                  
+    task = first_task;    
     this->total_tasks = total_tasks;
     status = Message::STATUS::READY;
 }

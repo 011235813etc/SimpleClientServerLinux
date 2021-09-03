@@ -44,8 +44,9 @@ Server::Server(uint32_t timeout_sec) {
 	listen(listener, 2);
 
 	// Create ServerResponse class object for save response message for Client.
-	to_client = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
+	prepare_response = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
 	status = Message::STATUS::READY;
+	to_client = Message(Message::ACTION::RESPONSE, Message::STATUS::READY, Message::launch_task, serial_number); 
 }
 
 /*! 
@@ -113,11 +114,23 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 
 /*! 
     \brief Processing Client response.
-    \param Message* from_client - pointer to the buffer.
+    \param[in, out] Message* from_client - pointer to the buffer.
 	\return void.
 */
-void Server::DataProcessing(Message* from_client) {
-	to_client->Processing(from_client);
+void Server::DataProcessing(Message* from_client, int sock_descriptor) {
+
+    std::cout << ">> Received message from client:" << std::endl;
+	std::cout << from_client[0] << std::endl;
+
+	prepare_response->Processing(from_client);
+	if(prepare_response->IsNeedResponse()) {
+		to_client = prepare_response->GetResponce();
+		send(sock_descriptor, reinterpret_cast<void*>(&to_client), sizeof(to_client), 0);
+		std::cout << "<< Send message to client:" << std::endl;
+		std::cout << to_client << std::endl << std::endl;
+	}
+
+
 }
 
 /*! 

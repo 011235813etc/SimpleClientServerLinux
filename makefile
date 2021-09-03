@@ -54,6 +54,7 @@ $(BUILD_DIR)/%.o: %.cpp
 default: 
 	@$(MAKE) client
 	@$(MAKE) server
+	@$(MAKE) unit
 
 .PHONY: all
 all: clean default
@@ -75,7 +76,8 @@ PROGRAMM_SOURCES := src/Client/ClientResponse.cpp \
 					src/Server/ServerResponse.cpp \
 					src/Message/Message.cpp \
 					src/BaseResponse/BaseResponse.cpp \
-					src/TaskList/TaskList.cpp
+					src/TaskList/TaskList.cpp		\
+					src/Client/Client.cpp
 
 UNIT_SOURCES := $(shell find $(UNIT_SRC_DIR) -name '*.cpp') $(PROGRAMM_SOURCES)
 UNIT_OBJECTS := $(addprefix $(BUILD_DIR)/,$(UNIT_SOURCES:%.cpp=%.o))
@@ -89,8 +91,8 @@ inf:
 CXXGTESTFLAGS = -g -L./gtest/lib -lgtest -lgtest_main -lpthread
 INCS = -I./gtest/include
 
-# link
-$(UNIT): $(UNIT_OBJECTS)
+link: $(BUILD_DIR)/$(UNIT_TARTGET)
+$(BUILD_DIR)/$(UNIT_TARTGET): $(UNIT_OBJECTS)
 	@mkdir -p $(dir $@)
 	$(CXX) $(INCS) -o $@ $(UNIT_OBJECTS) $(CXXGTESTFLAGS)
 	@echo ' '
@@ -99,7 +101,6 @@ $(UNIT): $(UNIT_OBJECTS)
 # pull in dependency info for *existing* .o files
 -include $(UNIT_OBJECTS:.o=.d)
 # compile and generate dependency info
-unit_compile:
 $(BUILD_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) -I$(dir $<) $^ -o $(BUILD_DIR)/$*.o $(INCS)
@@ -107,4 +108,5 @@ $(BUILD_DIR)/%.o: %.cpp
 	@echo ' '
 
 .PHONY: unit
-unit: clean unit_compile $(UNIT)
+unit: link
+# unit: clean unit_compile $(UNIT)

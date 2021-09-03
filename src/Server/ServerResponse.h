@@ -12,17 +12,31 @@
 
 class ServerResponse : public BaseResponse {
 
-    std::queue<int> task_queue;         //!< Using for save commands from Client.
-    bool isAllCommandsReceived = false; //!< Using as a sign all command receive.
+    std::queue<int> task_queue;         //!< Used for save commands from Client.
+    bool isAcceptingCommands;           //!< Used as a sign accepting commands.
+    bool isNeedResponse;                //!< Used for forming response.
 
     void Command(Message* from_client);
     void Response(Message* from_client);
+
+    void CommandClientDone(Message* from_client);
+    void CommandClientError(Message* from_client);
+    void CommandClientBusy(Message* from_client);
+    void CommandClientAccepted(Message* from_client);
+    void CommandClientReady(Message* from_client);
+
+    void ResponseClientDone(Message* from_client);
+    void ResponseClientError(Message* from_client);
+    void ResponseClientBusy(Message* from_client);
+    void ResponseClientAccepted(Message* from_client);
+    void ResponseClientReady(Message* from_client);
 public:
     ServerResponse(int serial_number);
     virtual ~ServerResponse();
     void Processing(Message* from_client);
     void SaveCommand(int task);
-    void SetCommandsLoadComplete(bool complete);
+    void SetAcceptingCommands(bool accepting);
+    bool IsNeedResponse();
 };
 
 #endif // SERVERRESPONSE_H

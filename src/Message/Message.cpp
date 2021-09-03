@@ -63,6 +63,19 @@ bool Message::operator==(const Message& other) {
 }
 
 /*! 
+    \brief Compare fields of class Message.
+    \param const Message& m1 - first compared object of class Message. 
+    \param const Message& m2 - second compared object of class Message.  
+    \return bool - comparison result.
+*/
+bool operator==(const Message& m1, const Message& m2) {
+    return (m1.action    == m2.action  ||
+            m1.status    == m2.status  ||
+            m1.task      == m2.task    ||
+            m1.sender    == m2.sender  );
+}
+
+/*! 
     \brief A response preparation.
     \param Message::STATUS status - current object status.
     \param int task - the task for processing.

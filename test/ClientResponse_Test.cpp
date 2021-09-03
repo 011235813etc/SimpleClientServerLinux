@@ -18,16 +18,18 @@ public:
 
 TEST_F(ClientResponseTest, nextCommandForServer) {
 
-  const int task = 10;
+  const int current_task = 10;
+  const int next_task = 11;
 
-  Message from_server(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, task, s_serial_num);
+  Message from_server(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, current_task, s_serial_num);
 
-  ClientResponse c_response(c_serial_num, total_tasks_num, task);
+  ClientResponse c_response(c_serial_num, total_tasks_num, current_task);
+  c_response.SetLoading();
   c_response.Processing(&from_server);
 
   auto to_server = c_response.GetResponce();
 
-  Message correct(Message::ACTION::COMMAND, Message::STATUS::ACCEPTED, task + 1, c_serial_num);
+  Message correct(Message::ACTION::COMMAND, Message::STATUS::READY, next_task, c_serial_num);
 
   EXPECT_EQ(correct.action, to_server.action);
   EXPECT_EQ(correct.status, to_server.status);
@@ -36,10 +38,12 @@ TEST_F(ClientResponseTest, nextCommandForServer) {
 }
 
 TEST_F(ClientResponseTest, lastCommandForServer) {
+  unsigned int lastCommand = total_tasks_num - 1;
 
-  Message from_server(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, total_tasks_num - 1, s_serial_num);
+  Message from_server(Message::ACTION::RESPONSE, Message::STATUS::ACCEPTED, lastCommand, s_serial_num);
 
-  ClientResponse c_response(c_serial_num, total_tasks_num, total_tasks_num - 1);
+  ClientResponse c_response(c_serial_num, total_tasks_num, lastCommand);
+  c_response.SetLoading();
   c_response.Processing(&from_server);
 
   auto to_server = c_response.GetResponce();
@@ -62,9 +66,6 @@ TEST_F(ClientResponseTest, passCommandForBusyServer) {
   c_response.Processing(&from_server);
 
   auto to_server = c_response.GetResponce();
-
-
-			// response.Response(Message::STATUS::READY, from_client->task);
 
   Message correct(Message::ACTION::RESPONSE, Message::STATUS::READY, task, c_serial_num);
 

@@ -6,20 +6,27 @@
 #include <iostream>
 #include <string>
 #include <climits>
+#include "../DebugFlags.h"
+
+
 
 class Message {
 public:
-    /*! 
-        \brief An enum class describe a type of action for client or server.
-     */
+#ifdef DEBUG
+    //! \brief A sign for save exchange history (Used for unit testsing).
+	enum class TYPE : uint8_t { 
+        SENT,       //!< Command for Client or Server.
+        RECEIVED    //!< Responce from Client or Server.
+    };
+#endif //DEBUG
+
+    //! \brief An enum class describe a type of action for client or server.
 	enum class ACTION : uint8_t { 
         COMMAND, //!< Command for Client or Server.
         RESPONSE //!< Responce from Client or Server.
     };
 
-    /*!
-        \brief An enum class describe status client or server.
-     */
+    //! \brief An enum class describe status client or server.
     enum class STATUS : uint8_t { 
         DONE,       //!< Client or Server are done execute command.
         ERROR,      //!< Client or Server are have error.
@@ -32,7 +39,8 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const STATUS& status);    
     friend std::ostream& operator<<(std::ostream& os, const Message& msg);      
 
-    bool operator==(const Message& msg);    
+    bool operator==(const Message& msg);  
+    friend bool operator==(const Message& m1, const Message& m2);
 
     ACTION action;  //!< Variable for save current action.
     STATUS status;  //!< Variable for save current status.

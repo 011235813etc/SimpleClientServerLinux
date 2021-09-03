@@ -11,11 +11,11 @@ using namespace std;
     \brief %Server application begin. 
     \return 0.
 */ 
-int main() {
+int main(int argc, char* argv[]) {
 
-	std::cout << "Server is launched" << std::endl;
+	std::cout << "Server is launched" << std::endl << std::endl;
 
-	const uint8_t timeout_sec = 15;
+	const uint8_t timeout_sec = (argv[1] == "") ? 255 : stoi(argv[1]);
 
     std::unique_ptr<Server> server(new Server(timeout_sec));
     
@@ -45,9 +45,9 @@ int main() {
 					clients.erase(*it);
 					continue;
 				}
-				server->DataProcessing(buf);
+				server->DataProcessing(buf, *it);
 				//отправляем данные обрано клиенту
-				send(*it, buf, sizeof(Message), 0);
+				// send(*it, buf, sizeof(Message), 0);
 			}
 		}
 	}

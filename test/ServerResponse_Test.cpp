@@ -23,9 +23,11 @@ TEST_F(ServerResponseTest, nextCommandForClient) {
   Message from_client(Message::ACTION::RESPONSE, Message::STATUS::DONE, task, c_serial_num);
 
   ServerResponse s_response(s_serial_num);
+  s_response.SetAcceptingCommands(true);
   s_response.SaveCommand(task + 1);
   s_response.SaveCommand(task + 2);
-  s_response.SetCommandsLoadComplete(true);
+  s_response.SetAcceptingCommands(false);
+  
   s_response.Processing(&from_client);
 
   auto to_client = s_response.GetResponce();
