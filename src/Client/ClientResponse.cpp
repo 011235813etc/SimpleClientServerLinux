@@ -25,13 +25,16 @@ ClientResponse::ClientResponse(int serial_number, int total_tasks, int first_tas
 */ 
 void ClientResponse::Processing(Message* from_server) {
 
-    if(status == Message::STATUS::BUSY) {
+    if(status == STATUS::BUSY) {
         response.Response(status, from_server->task);
     } else {
         switch(from_server->action) {
-            case Message::ACTION::COMMAND:  { Command(from_server);     break; }
-            case Message::ACTION::RESPONSE: { Response(from_server);    break; }
-            default: std::cout << "UNKNOWN ACTION TYPE" << std::endl;   break;
+            case ACTION::COMMAND:  { Command(from_server);     break; }
+            case ACTION::RESPONSE: { Response(from_server);    break; }
+            default: { 
+			    std::cout << "Request from server with " << from_server->action << std::endl;
+			    break; 
+		    }
         }
     }
 }
@@ -42,11 +45,11 @@ void ClientResponse::Processing(Message* from_server) {
 */ 
 void ClientResponse::Command(Message* from_server) {
     switch(status) {
-        case Message::STATUS::BUSY:     { CommandServerBusy(from_server);       break; }
-        case Message::STATUS::READY:    { CommandServerReady(from_server);      break; }	
-        case Message::STATUS::ACCEPTED: { CommandServerAccepted(from_server);   break; }	
-        case Message::STATUS::DONE:     { CommandServerDone(from_server);       break; }	
-        default: { std::cout << "UNKNOWN STATUS TYPE" << std::endl;             break; }
+        case STATUS::READY:    { CommandServerReady(from_server);      break; }	
+        default: { 
+			std::cout << "Command from server with " << from_server->status << std::endl;
+			break; 
+		}
     }
 }
 
@@ -56,47 +59,27 @@ void ClientResponse::Command(Message* from_server) {
 */ 
 void ClientResponse::Response(Message* from_server) {
     switch(from_server->status) {
-        case Message::STATUS::BUSY:     { ResponseServerBusy(from_server);      break; }
-        case Message::STATUS::READY:    { ResponseServerReady(from_server);     break; }	
-        case Message::STATUS::ACCEPTED: { ResponseServerAccepted(from_server);  break; }	
-        case Message::STATUS::DONE:     { ResponseServerDone(from_server);      break; }	
-        default: { std::cout << "UNKNOWN STATUS TYPE" << std::endl; 			break; }
+        case STATUS::BUSY:     { ResponseServerBusy(from_server);      break; }
+        case STATUS::READY:    { ResponseServerReady(from_server);     break; }	
+        case STATUS::ACCEPTED: { ResponseServerAccepted(from_server);  break; }	
+        case STATUS::DONE:     { ResponseServerDone(from_server);      break; }	
+        default: { 
+			std::cout << "Response from server with " << from_server->status << std::endl;
+			break; 
+		}
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
-/*! 
-    \brief Prepare response for command from server with status "BUSY".
-    \param Message* from_server - Pointer to received message from Server.
-*/ 
-void ClientResponse::CommandServerBusy(Message* from_server) {
-    std::cout << "Nothing here. Fix it!" << std::endl;
-}
-
 /*! 
     \brief Prepare response for command from server with status "READY".
     \param Message* from_server - Pointer to received message from Server.
 */ 
 void ClientResponse::CommandServerReady(Message* from_server) {
-    response.Response(Message::STATUS::ACCEPTED, from_server->task);
+    response.Response(STATUS::ACCEPTED, from_server->task);
     task    = from_server->task;
-    status  = Message::STATUS::BUSY;
+    status  = STATUS::BUSY;
 }
 
-/*! 
-    \brief Prepare response for command from server with status "ACCEPTED".
-    \param Message* from_server - Pointer to received message from Server.
-*/ 
-void ClientResponse::CommandServerAccepted(Message* from_server) {
-    std::cout << "Nothing here. Fix it!" << std::endl;
-}
-
-/*! 
-    \brief Prepare response for command from server with status "DONE".
-    \param Message* from_server - Pointer to received message from Server.
-*/ 
-void ClientResponse::CommandServerDone(Message* from_server) {
-    std::cout << "Nothing here. Fix it!" << std::endl;
-}
 ////////////////////////////////////////////////////////////////////////////////
 /*! 
     \brief Prepare response for response from server with status "BUSY".
@@ -107,7 +90,7 @@ void ClientResponse::ResponseServerBusy(Message* from_server) {
     const uint8_t one_sec = 1;
     std::chrono::seconds dura(one_sec);
     std::this_thread::sleep_for(dura);
-    response.Response(Message::STATUS::READY, from_server->task);
+    response.Response(STATUS::READY, from_server->task);
     //TODO make limit for request
 }
 
@@ -139,14 +122,14 @@ void ClientResponse::ResponseServerAccepted(Message* from_server) {
         task = (from_server->task == Message::launch_task) ? 0 : from_server->task + 1;
 
         if(task + 1 < total_tasks) {
-            response.Command(Message::STATUS::READY, task);
+            response.Command(STATUS::READY, task);
             std::cout << "<< Send to server task #" << task << std::endl;
         } else {
-            response.Command(Message::STATUS::DONE, task);
+            response.Command(STATUS::DONE, task);
             std::cout << "Task #" << task << " is last." << std::endl;
         }
     } else {
-        response.Command(Message::STATUS::ACCEPTED, task);
+        response.Command(STATUS::ACCEPTED, task);
     }
 }
 
@@ -159,11 +142,11 @@ void ClientResponse::ResponseServerDone(Message* from_server) {
     if(loadingTasks) {
         loadingTasks = false;
         task = Message::launch_task;
-        response.Response(Message::STATUS::READY, Message::launch_task);
+        response.Response(STATUS::READY, Message::launch_task);
     } else {
         std::cout << "Tasks done" << std::endl;
-        response.Response(Message::STATUS::DONE, Message::done_task);
-        status = Message::STATUS::DONE;     
+        response.Response(STATUS::DONE, Message::done_task);
+        status = STATUS::DONE;     
         task = Message::done_task; 
     }
 }
@@ -183,10 +166,10 @@ bool ClientResponse::IsLoading() {
 */
 void ClientResponse::RequestCommandFromServer() {
     if(task == Message::launch_task) {
-        response.Response(Message::STATUS::READY, task);
+        response.Response(STATUS::READY, task);
     } else {
-        response.Response(Message::STATUS::DONE, task);
-        status = Message::STATUS::READY;
+        response.Response(STATUS::DONE, task);
+        status = STATUS::READY;
     }
 }
 

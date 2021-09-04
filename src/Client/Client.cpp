@@ -10,12 +10,12 @@ int Client::serial_number = 0;
 
 //! \brief Constructor with argument.
 //! \param const ACTION _action - type of action for client or server.
-Client::Client(Message::ACTION action, unsigned int total_tasks) {
+Client::Client(ACTION action, unsigned int total_tasks) {
 
 	srand(time(NULL));
 	serial_number = rand() % 100 + 1; 
 
-    to_server = Message(action, Message::STATUS::READY, Message::launch_task, serial_number); 
+    to_server = Message(action, STATUS::READY, Message::launch_task, serial_number); 
 
     soc_addr = std::unique_ptr<SocketAddress>(new SocketAddress("127.0.0.1", 3425));
 
@@ -51,7 +51,7 @@ void Client::Recv() {
     // prepare_response->Processing(from_server);
 #ifdef DEBUG
     if(enableHistoryRecording) {
-        history.push_back(std::make_pair(from_server[0], Message::TYPE::RECEIVED));
+        history.push_back(std::make_pair(from_server[0], TYPE::RECEIVED));
     }
 #endif //DEBUG
 }
@@ -68,7 +68,7 @@ void Client::Send(Message& _to_server) {
 
 #ifdef DEBUG
     if(enableHistoryRecording) {
-        history.push_back(std::make_pair(_to_server, Message::TYPE::SENT));
+        history.push_back(std::make_pair(_to_server, TYPE::SENT));
     }
 #endif //DEBUG
 }

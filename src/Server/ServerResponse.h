@@ -21,22 +21,40 @@ class ServerResponse : public BaseResponse {
 
     void CommandClientDone(Message* from_client);
     void CommandClientError(Message* from_client);
-    void CommandClientBusy(Message* from_client);
-    void CommandClientAccepted(Message* from_client);
     void CommandClientReady(Message* from_client);
 
     void ResponseClientDone(Message* from_client);
-    void ResponseClientError(Message* from_client);
-    void ResponseClientBusy(Message* from_client);
-    void ResponseClientAccepted(Message* from_client);
     void ResponseClientReady(Message* from_client);
 public:
-    ServerResponse(int serial_number);
+    explicit ServerResponse(int serial_number);
+    ServerResponse(const ServerResponse& other);
+    ServerResponse& operator=(const ServerResponse& other);
+    ServerResponse& operator=(const ServerResponse&& other);
     virtual ~ServerResponse();
     void Processing(Message* from_client);
     void SaveCommand(int task);
-    void SetAcceptingCommands(bool accepting);
     bool IsNeedResponse();
+
+#ifdef DEBUG
+    //! \brief Set accepting commands status (use only unit tests).
+    //! \param bool complete - commands load status.
+	//! \return void.
+    void SetAcceptingCommands(bool accepting) {
+        isAcceptingCommands = accepting;
+    }
+
+    //! \brief Get saved commands count.
+	//! \return int - commands count.
+    int GetSavedCommandsCount() {
+        return task_queue.size();
+    }
+
+    //! \brief Getting status accepting commands
+    //! \return bool - status accepting commands.
+    bool IsAcceptingCommands() {
+        return isAcceptingCommands;
+    }
+#endif //DEBUG
 };
 
 #endif // SERVERRESPONSE_H

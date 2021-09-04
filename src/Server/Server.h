@@ -26,7 +26,7 @@ class Server {
 
 	std::unique_ptr<ServerResponse> prepare_response; 	//!< Used for save response message for Client.
 	std::stack<int> task_stack;					//!< Used for save tasks from Client.
-	Message::STATUS status;						//!< Current Server status.
+	STATUS status;						//!< Current Server status.
 	
 public:
     explicit Server(uint32_t timeout_sec);

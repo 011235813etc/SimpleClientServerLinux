@@ -26,6 +26,10 @@ protected:
 
 public:
     BaseResponse(int serial_number, int total_tasks, int first_task = Message::launch_task);
+    BaseResponse(const BaseResponse& other);
+    BaseResponse& operator=(const BaseResponse& other);
+    BaseResponse& operator=(const BaseResponse&& other);
+    
     
     //! \brief Class destructor.
     virtual ~BaseResponse() {};

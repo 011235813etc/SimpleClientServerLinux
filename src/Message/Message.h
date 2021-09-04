@@ -54,7 +54,7 @@ public:
     Message(const Message& other);
     //! \brief Class destructor.
     ~Message() = default;
-    Message& operator=(Message&& other);
+    Message& operator=(const Message& other);
     
     void SetStatus(const STATUS _status);
     void SetAction(const ACTION _action);
@@ -63,5 +63,11 @@ public:
     void Response(Message::STATUS status, int task);
     void Command(Message::STATUS status, int task);
 };
+
+namespace  {
+    using ACTION    = Message::ACTION;
+    using STATUS    = Message::STATUS;
+    using TYPE      = Message::TYPE;
+}
 
 #endif // MESSAGE_H

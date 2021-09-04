@@ -19,6 +19,43 @@ BaseResponse::BaseResponse(int serial_number, int total_tasks, int first_task)
     status = Message::STATUS::READY;
 }
 
+//! \brief Copy constructor.
+//! \param const BaseResponse& other - other object of class Message. 
+BaseResponse::BaseResponse(const BaseResponse& other) {
+    if (this != &other) {   
+        response    = other.response;
+        task        = other.task;    
+        total_tasks = other.total_tasks;
+        status      = other.status;
+    }
+}
+
+//! \brief Copy assignment operator.
+//! \param const BaseResponse& other - other object of class BaseResponse. 
+//! \return BaseResponse&& - current object
+BaseResponse& BaseResponse::operator=(const BaseResponse& other) {
+   if (this != &other) {   
+    response    = other.response;
+    task        = other.task;    
+    total_tasks = other.total_tasks;
+    status      = other.status;
+   }
+   return *this;
+}
+
+//! \brief Copy assignment operator.
+//! \param const BaseResponse&& other - other object of class BaseResponse. 
+//! \return BaseResponse&& - current object
+BaseResponse& BaseResponse::operator=(const BaseResponse&& other) {
+   if (this != &other) {   
+    response    = other.response;
+    task        = other.task;    
+    total_tasks = other.total_tasks;
+    status      = other.status;
+   }
+   return *this;
+}
+
 /*! 
     \brief Get currnet status.
     \return Message - current status.

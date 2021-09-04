@@ -35,12 +35,13 @@ Message::Message(const Message& other) {
     }
 }
 
+
 /*! 
     \brief Copy assignment operator.
     \param const Message& other - other object of class Message. 
     \return Message& - current object
 */
-Message& Message::operator=(Message&& other) {
+Message& Message::operator=(const Message& other) {
    if (this != &other) {   
         action 	= other.action;
         status 	= other.status;

@@ -29,13 +29,13 @@ int main(int argc, char* argv[]) {
     // bool isLoader = (argv[2] != "loader");
     // bool isLoader = (std::strcmp(argv[2], "loader") == 0);
     bool isLoader = true;
-	Message::ACTION action = (isLoader) ? (Message::ACTION::COMMAND) : (Message::ACTION::RESPONSE);
+	ACTION action = (isLoader) ? (ACTION::COMMAND) : (ACTION::RESPONSE);
     // std::unique_ptr<Client> client(new Client(action));
     std::unique_ptr<Client> client;
     if(isLoader) {
-        client = std::unique_ptr<Client>(new Client(Message::ACTION::COMMAND, t_list->size()));
+        client = std::unique_ptr<Client>(new Client(ACTION::COMMAND, t_list->size()));
     } else {
-        client = std::unique_ptr<Client>(new Client(Message::ACTION::RESPONSE));
+        client = std::unique_ptr<Client>(new Client(ACTION::RESPONSE));
     }
 
     if(isLoader) {

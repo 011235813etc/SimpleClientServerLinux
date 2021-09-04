@@ -15,10 +15,7 @@ class ClientResponse : public BaseResponse {
     void Response(Message* from_server);
     bool loadingTasks;                  //!< Used as a sing for load tasks to server.
 
-    void CommandServerBusy(Message* from_server);
     void CommandServerReady(Message* from_server);
-    void CommandServerAccepted(Message* from_server);
-    void CommandServerDone(Message* from_server);
 
     void ResponseServerBusy(Message* from_server);
     void ResponseServerReady(Message* from_server);

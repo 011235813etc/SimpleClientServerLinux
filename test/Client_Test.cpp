@@ -47,51 +47,51 @@ TEST_F(ClientTest, sendCommandsFromClientToServer) {
   char path[] = "/home/lemongrab/cpp_projects/vs_code/SimpleClientServerLinux/task_list.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
-  std::unique_ptr<Client> client = std::unique_ptr<Client>(new Client(Message::ACTION::COMMAND, t_list->size()));
+  std::unique_ptr<Client> client = std::unique_ptr<Client>(new Client(ACTION::COMMAND, t_list->size()));
 
   client->LoadTasks();
 
   auto history = client->GetHistory();
 
-  vector<pair<Message, Message::TYPE> > correct;
+  vector<pair<Message, TYPE> > correct;
   const int c_sender = client->GetSerialNumber(); 
   const int s_sender = 19700101; 
 
-  correct.push_back(make_pair(Message(Message::ACTION::COMMAND, 
-                                      Message::STATUS::READY, 
+  correct.push_back(make_pair(Message(ACTION::COMMAND, 
+                                      STATUS::READY, 
                                       Message::launch_task, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::READY, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::READY, 
                                       Message::launch_task, 
                                       s_sender), 
-                                      Message::TYPE::RECEIVED));
+                                      TYPE::RECEIVED));
 
-  correct.push_back(make_pair(Message(Message::ACTION::COMMAND, 
-                                      Message::STATUS::READY, 
+  correct.push_back(make_pair(Message(ACTION::COMMAND, 
+                                      STATUS::READY, 
                                       0, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::ACCEPTED, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::ACCEPTED, 
                                       0, 
                                       s_sender), 
-                                      Message::TYPE::RECEIVED));
+                                      TYPE::RECEIVED));
 
-  correct.push_back(make_pair(Message(Message::ACTION::COMMAND, 
-                                      Message::STATUS::DONE, 
+  correct.push_back(make_pair(Message(ACTION::COMMAND, 
+                                      STATUS::DONE, 
                                       1, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::DONE, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::DONE, 
                                       1, 
                                       s_sender), 
-                                      Message::TYPE::RECEIVED));
+                                      TYPE::RECEIVED));
 
   Compare(history, correct);
 }
@@ -107,7 +107,7 @@ TEST_F(ClientTest, sendCommandsFromServerToClient) {
   char path[] = "/home/lemongrab/cpp_projects/vs_code/SimpleClientServerLinux/task_list.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
-  std::unique_ptr<Client> client = std::unique_ptr<Client>(new Client(Message::ACTION::COMMAND, t_list->size()));
+  std::unique_ptr<Client> client = std::unique_ptr<Client>(new Client(ACTION::COMMAND, t_list->size()));
 
 
   client->SetEnableHistoryRecording(false);
@@ -127,53 +127,53 @@ TEST_F(ClientTest, sendCommandsFromServerToClient) {
   const int second_task = 1;
 
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::READY, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::READY, 
                                       Message::launch_task, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::COMMAND, 
-                                      Message::STATUS::READY, 
+  correct.push_back(make_pair(Message(ACTION::COMMAND, 
+                                      STATUS::READY, 
                                       first_task, 
                                       s_sender), 
-                                      Message::TYPE::RECEIVED));
+                                      TYPE::RECEIVED));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::ACCEPTED, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::ACCEPTED, 
                                       first_task, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::DONE, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::DONE, 
                                       first_task, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::COMMAND, 
-                                      Message::STATUS::READY, 
+  correct.push_back(make_pair(Message(ACTION::COMMAND, 
+                                      STATUS::READY, 
                                       second_task, 
                                       s_sender), 
-                                      Message::TYPE::RECEIVED));
+                                      TYPE::RECEIVED));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::ACCEPTED, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::ACCEPTED, 
                                       second_task, 
                                       c_sender), 
-                                      Message::TYPE::SENT));
+                                      TYPE::SENT));
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::DONE, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::DONE, 
                                       second_task, 
                                       c_sender), 
-                                      Message::TYPE::SENT));                                  
+                                      TYPE::SENT));                                  
 
-  correct.push_back(make_pair(Message(Message::ACTION::RESPONSE, 
-                                      Message::STATUS::DONE, 
+  correct.push_back(make_pair(Message(ACTION::RESPONSE, 
+                                      STATUS::DONE, 
                                       Message::done_task, 
                                       s_sender), 
-                                      Message::TYPE::RECEIVED));
+                                      TYPE::RECEIVED));
 
   Compare(history, correct);
 }

@@ -1,121 +1,130 @@
-/*! \file ServerResponse.cpp
-    \brief ServerResponse class implementation.
-
-    This class describe preparing response for Client.
-*/
+//! \file ServerResponse.cpp
+//! \brief ServerResponse class implementation.
+//! This class describe preparing response for Client.
 
 #include "ServerResponse.h"
 
-/*! 
-    \brief Constructor with argument.
-    \param int serial_number - Client serial number
-*/ 
-ServerResponse::ServerResponse(int serial_number)
-    : BaseResponse(serial_number, 0, 0)
-{
+//! \brief Constructor with argument.
+//! \param int serial_number - Client serial number
+ServerResponse::ServerResponse(int serial_number) : BaseResponse(serial_number, 0, 0) {
     isAcceptingCommands = false;
 	isNeedResponse = true;
 }
 
-/*! 
-    \brief Class destructor.
+//! \brief Copy constructor.
+//! \param const ServerResponse& other - other object of class Message. 
+ServerResponse::ServerResponse(const ServerResponse& other) : BaseResponse(other) {
+	
+	if (this != &other) {  
+		isAcceptingCommands = other.isAcceptingCommands;
+		isNeedResponse = other.isAcceptingCommands;
+	}
+}
 
-	Free the task queue.
-*/
+//! \brief Copy assignment operator.
+//! \param const ServerResponse& other - other object of class Message. 
+//! \return ServerResponse& - current object
+ServerResponse& ServerResponse::operator=(const ServerResponse& other) {
+	BaseResponse::operator=(other);
+   if (this != &other) {   
+		isAcceptingCommands = other.isAcceptingCommands;
+		isNeedResponse = other.isAcceptingCommands;
+   }
+   return *this;
+}
+
+//! \brief Copy assignment operator.
+//! \param const ServerResponse&& other - other object of class Message. 
+//! \return ServerResponse& - current object
+ServerResponse& ServerResponse::operator=(const ServerResponse&& other) {
+	BaseResponse::operator=(other);
+   if (this != &other) {   
+		isAcceptingCommands = other.isAcceptingCommands;
+		isNeedResponse = other.isAcceptingCommands;
+   }
+   return *this;
+}
+ 
+//! \brief Class destructor.
+//! Free the task queue.
 ServerResponse::~ServerResponse() {
 	while(!task_queue.empty())	{
 		task_queue.pop();
 	}
 }
-
-/*! 
-    \brief Processing message from Client.
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+ 
+//! \brief Processing message from Client.
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::Processing(Message* from_client) {
+	isNeedResponse = true;
 	switch(from_client->action) {
-	    case Message::ACTION::COMMAND: {
-	    	Command(from_client);
-	    	break;
-	    }
-        case Message::ACTION::RESPONSE: {
-	    	Response(from_client);
-        	break;
-        }
-        default: std::cout << "UNKNOWN ACTION TYPE" << std::endl; break;
+	    case ACTION::COMMAND: 	{ Command(from_client);  break; }
+        case ACTION::RESPONSE: 	{ Response(from_client); break; }
+		default: { 
+			std::cout << "Request from client with " << from_client->action << std::endl;
+			isNeedResponse = false;
+			break; 
+		}
 	}
 }
 
-/*! 
-    \brief Preparing command message to Client.
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+ 
+//! \brief Preparing command message to Client.
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::Command(Message* from_client) {
-    
     switch(from_client->status) {
-		case Message::STATUS::DONE: 	{ CommandClientDone(from_client); 		break; }
-		case Message::STATUS::ERROR: 	{ CommandClientError(from_client); 		break; }
-        case Message::STATUS::READY:  	{ CommandClientReady(from_client); 		break; }
-        case Message::STATUS::BUSY:		{ CommandClientBusy(from_client); 		break; }
-        case Message::STATUS::ACCEPTED: { CommandClientAccepted(from_client); 	break; }
-        default: { std::cout << "UNKNOWN STATUS TYPE" << std::endl; break; }
+		case STATUS::DONE: 	{ CommandClientDone(from_client);  		break; }
+		case STATUS::ERROR: { CommandClientError(from_client); 		break; }
+        case STATUS::READY: { CommandClientReady(from_client); 		break; }
+        default: { 
+			std::cout << "Command from client with " << from_client->status << std::endl;
+			isNeedResponse = false;
+			break; 
+		}
     }
 }
 
-/*! 
-    \brief Preparing response message to Client.
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+//! \brief Preparing response message to Client.
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::Response(Message* from_client) {
     switch(from_client->status) {
-       	case Message::STATUS::DONE: 	{ ResponseClientDone(from_client); break;		}
-		case Message::STATUS::ERROR: 	{ ResponseClientError(from_client); break; 		}
-		case Message::STATUS::READY: 	{ ResponseClientReady(from_client); break; 		}	
-		case Message::STATUS::BUSY: 	{ ResponseClientBusy(from_client); break; 		}
-		case Message::STATUS::ACCEPTED:	{ ResponseClientAccepted(from_client); break; 	}
-		default: { std::cout << "UNKNOWN STATUS TYPE" << std::endl; break; }
+       	case STATUS::DONE: 		{ ResponseClientDone(from_client); 		break; }
+		case STATUS::READY: 	{ ResponseClientReady(from_client); 	break; }	
+		default: { 
+			std::cout << "Response from client with " << from_client->status << std::endl;
+			isNeedResponse = false;
+			break; 
+		}
     }
 }
 
-/*! 
-    \brief Saving commands from Client.
-    \param int task - task number.
-	\return void.
-*/ 
+ 
+//! \brief Saving commands from Client.
+//! \param int task - task number.
+//! \return void.
 void ServerResponse::SaveCommand(int task) {
 	task_queue.push(task);
 }
 
-/*! 
-    \brief Set accepting commands status (use only unit tests).
-    \param bool complete - commands load status.
-	\return void.
-*/ 
-void ServerResponse::SetAcceptingCommands(bool accepting) {
-	isAcceptingCommands = accepting;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
-/*! 
-    \brief Prepare response for command from client with status "DONE".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+ 
+//! \brief Prepare response for command from client with status "DONE".
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::CommandClientDone(Message* from_client) {
-	response.Response(Message::STATUS::DONE, from_client->task);
+	response.Response(STATUS::DONE, from_client->task);
 	SaveCommand(from_client->task);
 	std::cout << "Server is ready for execute tasks!" << std::endl;
 	isAcceptingCommands = false;
 }
 
-/*! 
-    \brief Prepare response for command from client with status "ERROR".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+ 
+//! \brief Prepare response for command from client with status "ERROR".
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::CommandClientError(Message* from_client) {
 	std::cout << "ERROR!" << std::endl; 
 	std::cout << "Task steak will be cleared!" << std::endl; 	
@@ -123,106 +132,62 @@ void ServerResponse::CommandClientError(Message* from_client) {
 		std::cout << task_queue.front() << std::endl;
 		task_queue.pop();
 	}
+	response.Response(STATUS::DONE, Message::launch_task);
 }
 
-/*! 
-    \brief Prepare response for command from client with status "ACCEPTED".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
-void ServerResponse::CommandClientAccepted(Message* from_client) {
-	response.Response(Message::STATUS::ACCEPTED, from_client->task);
-}
-
-/*! 
-    \brief Prepare response for command from client with status "BUSY".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
-void ServerResponse::CommandClientBusy(Message* from_client) {
-	std::cout << "Nothing here. Fix it!" << std::endl;
-}
-
-/*! 
-    \brief Prepare response for command from client with status "READY".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+ 
+//! \brief Prepare response for command from client with status "READY".
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::CommandClientReady(Message* from_client) {
+	isAcceptingCommands = true;
 	if(from_client->task == Message::launch_task) {
-		response.Response(Message::STATUS::READY, from_client->task);
-		isAcceptingCommands = true;
+		response.Response(STATUS::READY, from_client->task);
 	} else {
-		response.Response(Message::STATUS::ACCEPTED, from_client->task);
+		response.Response(STATUS::ACCEPTED, from_client->task);
 		SaveCommand(from_client->task);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/*! 
-    \brief Prepare response for response from client with status "DONE".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
+ 
+//! \brief Prepare response for response from client with status "DONE".
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
 void ServerResponse::ResponseClientDone(Message* from_client) {
 	if(!isAcceptingCommands) {
 		if(!task_queue.empty()) {
 			std::cout << ">> Set to client task #" << task_queue.front() << std::endl;
-			response.Command(Message::STATUS::READY, task_queue.front());
+			response.Command(STATUS::READY, task_queue.front());
 			task_queue.pop();
 		} else {
 			std::cout << "Task stack empty" << std::endl;
-			// response.Response(Message::STATUS::DONE, from_client->task);
-			response.Response(Message::STATUS::DONE, Message::done_task);
+			response.Response(STATUS::DONE, Message::done_task);
 		}
-	} 
-}
-
-/*! 
-    \brief Prepare response for response from client with status "ERROR".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
-void ServerResponse::ResponseClientError(Message* from_client) {
-	std::cout << "Nothing here. Fix it!" << std::endl; 
-}
-
-/*! 
-    \brief Prepare response for response from client with status "ACCEPTED".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
-void ServerResponse::ResponseClientAccepted(Message* from_client) {
-	std::cout << "ACCEPTED" << std::endl; 
-	isNeedResponse = false;	
-}
-
-/*! 
-    \brief Prepare response for response from client with status "BUSY".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
-void ServerResponse::ResponseClientBusy(Message* from_client) {
-	response.Response(Message::STATUS::ACCEPTED, task_queue.front());
-}
-
-/*! 
-    \brief Prepare response for response from client with status "READY".
-    \param Message* from_client - Pointer to received message from Client.
-	\return void.
-*/ 
-void ServerResponse::ResponseClientReady(Message* from_client) {
-	if(!isAcceptingCommands) {
-		ResponseClientDone(from_client);
 	} else {
-		response.Response(Message::STATUS::BUSY, Message::launch_task);
+		isNeedResponse = false;
+	}
+}
+
+ 
+//! \brief Prepare response for response from client with status "READY".
+//! \param Message* from_client - Pointer to received message from Client.
+//! \return void.
+void ServerResponse::ResponseClientReady(Message* from_client) {
+	if(isAcceptingCommands) {
+		response.Response(STATUS::BUSY, Message::launch_task);
+	} else {
+		ResponseClientDone(from_client);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
 
+//! \brief Get do not need response status.
+//! \return bool - do not need response status.
 bool ServerResponse::IsNeedResponse() {
 	auto need = isNeedResponse;
 	isNeedResponse = true;
 	return need;
 }
+

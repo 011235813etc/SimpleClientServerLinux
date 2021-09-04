@@ -45,8 +45,8 @@ Server::Server(uint32_t timeout_sec) {
 
 	// Create ServerResponse class object for save response message for Client.
 	prepare_response = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
-	status = Message::STATUS::READY;
-	to_client = Message(Message::ACTION::RESPONSE, Message::STATUS::READY, Message::launch_task, serial_number); 
+	status = STATUS::READY;
+	to_client = Message(ACTION::RESPONSE, STATUS::READY, Message::launch_task, serial_number); 
 }
 
 /*! 
@@ -129,8 +129,6 @@ void Server::DataProcessing(Message* from_client, int sock_descriptor) {
 		std::cout << "<< Send message to client:" << std::endl;
 		std::cout << to_client << std::endl << std::endl;
 	}
-
-
 }
 
 /*! 
