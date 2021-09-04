@@ -14,7 +14,6 @@ class ServerResponse : public BaseResponse {
 
     std::queue<int> task_queue;         //!< Used for save commands from Client.
     bool isAcceptingCommands;           //!< Used as a sign accepting commands.
-    bool isNeedResponse;                //!< Used for forming response.
 
     void Command(Message* from_client);
     void Response(Message* from_client);
@@ -33,7 +32,6 @@ public:
     virtual ~ServerResponse();
     void Processing(Message* from_client);
     void SaveCommand(int task);
-    bool IsNeedResponse();
 
 #ifdef DEBUG
     //! \brief Set accepting commands status (use only unit tests).

@@ -9,10 +9,11 @@
 
 class BaseResponse {
 protected:
-    int total_tasks;            //!< Used for save total number of  tasks.
-    Message response;           //!< Used for save response or command.
-    Message::STATUS status;     //!< Used for save currant status.
-    int task;                   //!< Used for save current task.
+    int total_tasks;        //!< Used for save total number of  tasks.
+    Message response;       //!< Used for save response or command.
+    STATUS status;          //!< Used for save currant status.
+    int task;               //!< Used for save current task.
+    bool isNeedResponse;    //!< Used for forming response.
 
     //! \brief Preparing command message to Server.
     //! \param Message* received - Pointer to received message from Server.
@@ -29,8 +30,6 @@ public:
     BaseResponse(const BaseResponse& other);
     BaseResponse& operator=(const BaseResponse& other);
     BaseResponse& operator=(const BaseResponse&& other);
-    
-    
     //! \brief Class destructor.
     virtual ~BaseResponse() {};
 
@@ -39,10 +38,12 @@ public:
     //! \return void.
     virtual void Processing(Message* received) = 0;
 
-    Message::STATUS GetStatus();
+    STATUS GetStatus();
     int GetTask();
     Message GetResponce();
-    void SetStatus(Message::STATUS status);
+    void SetStatus(STATUS status);
+
+    bool IsNeedResponse();
 };
 
 #endif // BASERESPONSE_H

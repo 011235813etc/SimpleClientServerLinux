@@ -17,6 +17,40 @@ ClientResponse::ClientResponse(int serial_number, int total_tasks, int first_tas
     : BaseResponse(serial_number, total_tasks, first_task)
 {
     loadingTasks = false;
+    isNeedResponse = true;
+}
+
+//! \brief Copy constructor.
+//! \param const ClientResponse& other - other object of class Message. 
+ClientResponse::ClientResponse(const ClientResponse& other) : BaseResponse(other) {
+	if (this != &other) {  
+		loadingTasks = other.loadingTasks;
+        isNeedResponse = other.isNeedResponse;
+	}
+}
+
+//! \brief Copy assignment operator.
+//! \param const ClientResponse& other - other object of class Message. 
+//! \return ClientResponse& - current object
+ClientResponse& ClientResponse::operator=(const ClientResponse& other) {
+	BaseResponse::operator=(other);
+   if (this != &other) {   
+		loadingTasks = other.loadingTasks;
+        isNeedResponse = other.isNeedResponse;
+   }
+   return *this;
+}
+
+//! \brief Copy assignment operator.
+//! \param const ClientResponse&& other - other object of class Message. 
+//! \return ClientResponse& - current object
+ClientResponse& ClientResponse::operator=(const ClientResponse&& other) {
+	BaseResponse::operator=(other);
+   if (this != &other) {   
+		loadingTasks = other.loadingTasks;
+        isNeedResponse = other.isNeedResponse;
+   }
+   return *this;
 }
 
 /*! 
@@ -25,6 +59,7 @@ ClientResponse::ClientResponse(int serial_number, int total_tasks, int first_tas
 */ 
 void ClientResponse::Processing(Message* from_server) {
 
+    isNeedResponse = true;
     if(status == STATUS::BUSY) {
         response.Response(status, from_server->task);
     } else {
@@ -33,6 +68,7 @@ void ClientResponse::Processing(Message* from_server) {
             case ACTION::RESPONSE: { Response(from_server);    break; }
             default: { 
 			    std::cout << "Request from server with " << from_server->action << std::endl;
+                isNeedResponse = false;
 			    break; 
 		    }
         }
@@ -44,10 +80,11 @@ void ClientResponse::Processing(Message* from_server) {
     \param Message* from_server - Pointer to received message from Server.
 */ 
 void ClientResponse::Command(Message* from_server) {
-    switch(status) {
+    switch(from_server->status) {
         case STATUS::READY:    { CommandServerReady(from_server);      break; }	
         default: { 
 			std::cout << "Command from server with " << from_server->status << std::endl;
+            isNeedResponse = false;
 			break; 
 		}
     }
@@ -59,12 +96,13 @@ void ClientResponse::Command(Message* from_server) {
 */ 
 void ClientResponse::Response(Message* from_server) {
     switch(from_server->status) {
+        case STATUS::DONE:     { ResponseServerDone(from_server);      break; }	
         case STATUS::BUSY:     { ResponseServerBusy(from_server);      break; }
         case STATUS::READY:    { ResponseServerReady(from_server);     break; }	
         case STATUS::ACCEPTED: { ResponseServerAccepted(from_server);  break; }	
-        case STATUS::DONE:     { ResponseServerDone(from_server);      break; }	
         default: { 
 			std::cout << "Response from server with " << from_server->status << std::endl;
+            isNeedResponse = false;
 			break; 
 		}
     }
@@ -86,12 +124,19 @@ void ClientResponse::CommandServerReady(Message* from_server) {
     \param Message* from_server - Pointer to received message from Server.
 */ 
 void ClientResponse::ResponseServerBusy(Message* from_server) {
-    //waiting 1 sec
+
+    static uint8_t count = 0;
     const uint8_t one_sec = 1;
-    std::chrono::seconds dura(one_sec);
-    std::this_thread::sleep_for(dura);
-    response.Response(STATUS::READY, from_server->task);
-    //TODO make limit for request
+
+    if(count++ < 2) {
+        //waiting 1 sec
+        std::chrono::seconds dura(one_sec);
+        std::this_thread::sleep_for(dura);
+        response.Response(STATUS::READY, from_server->task);
+    } else {
+        std::cout << "Server is busy!" << std::endl;
+        isNeedResponse = false;
+    }
 }
 
 /*! 
@@ -103,12 +148,15 @@ void ClientResponse::ResponseServerReady(Message* from_server) {
         loadingTasks = (task == Message::launch_task);
         if(loadingTasks) {
             ResponseServerAccepted(from_server);
+        } else {
+            std::cout << "Server is ready" << std::endl; 
+            isNeedResponse = false;  
         }
     } else {
-        std::cout << "Need to do smth" << std::endl; 
-
-        // std::cout << ">> Send to server task #" << ++task << std::endl;
-        task++;
+        // std::cout << "Need to do smth" << std::endl; 
+        // task++;
+        std::cout << "Server is ready" << std::endl; 
+        isNeedResponse = false;
     }
 }
 
@@ -129,7 +177,8 @@ void ClientResponse::ResponseServerAccepted(Message* from_server) {
             std::cout << "Task #" << task << " is last." << std::endl;
         }
     } else {
-        response.Command(STATUS::ACCEPTED, task);
+        // response.Command(STATUS::ACCEPTED, task);
+        isNeedResponse = false;
     }
 }
 
@@ -142,7 +191,7 @@ void ClientResponse::ResponseServerDone(Message* from_server) {
     if(loadingTasks) {
         loadingTasks = false;
         task = Message::launch_task;
-        response.Response(STATUS::READY, Message::launch_task);
+        isNeedResponse = false;
     } else {
         std::cout << "Tasks done" << std::endl;
         response.Response(STATUS::DONE, Message::done_task);
@@ -180,3 +229,4 @@ void ClientResponse::RequestCommandFromServer() {
 bool ClientResponse::IsTasksDone() {
     return (task == Message::done_task);
 }
+

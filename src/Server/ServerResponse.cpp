@@ -8,7 +8,6 @@
 //! \param int serial_number - Client serial number
 ServerResponse::ServerResponse(int serial_number) : BaseResponse(serial_number, 0, 0) {
     isAcceptingCommands = false;
-	isNeedResponse = true;
 }
 
 //! \brief Copy constructor.
@@ -17,7 +16,6 @@ ServerResponse::ServerResponse(const ServerResponse& other) : BaseResponse(other
 	
 	if (this != &other) {  
 		isAcceptingCommands = other.isAcceptingCommands;
-		isNeedResponse = other.isAcceptingCommands;
 	}
 }
 
@@ -28,7 +26,6 @@ ServerResponse& ServerResponse::operator=(const ServerResponse& other) {
 	BaseResponse::operator=(other);
    if (this != &other) {   
 		isAcceptingCommands = other.isAcceptingCommands;
-		isNeedResponse = other.isAcceptingCommands;
    }
    return *this;
 }
@@ -40,7 +37,6 @@ ServerResponse& ServerResponse::operator=(const ServerResponse&& other) {
 	BaseResponse::operator=(other);
    if (this != &other) {   
 		isAcceptingCommands = other.isAcceptingCommands;
-		isNeedResponse = other.isAcceptingCommands;
    }
    return *this;
 }
@@ -182,12 +178,4 @@ void ServerResponse::ResponseClientReady(Message* from_client) {
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
-
-//! \brief Get do not need response status.
-//! \return bool - do not need response status.
-bool ServerResponse::IsNeedResponse() {
-	auto need = isNeedResponse;
-	isNeedResponse = true;
-	return need;
-}
 

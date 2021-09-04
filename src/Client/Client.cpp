@@ -113,7 +113,7 @@ int Client::CommandRequest() {
     Recv();
     DataProcessing(from_server);
 
-    if(!prepare_response->IsTasksDone()) {
+    if(prepare_response->IsNeedResponse() && !prepare_response->IsTasksDone()) {
         to_server = prepare_response->GetResponce();
         Send(to_server);
         return from_server[0].task;

@@ -14,9 +14,10 @@
 BaseResponse::BaseResponse(int serial_number, int total_tasks, int first_task)
     : response(Message::ACTION::RESPONSE, Message::STATUS::READY, first_task, serial_number)
 {
-    task = first_task;    
-    this->total_tasks = total_tasks;
-    status = Message::STATUS::READY;
+    task                = first_task;    
+    this->total_tasks   = total_tasks;
+    status              = Message::STATUS::READY;
+    isNeedResponse      = true;
 }
 
 //! \brief Copy constructor.
@@ -87,4 +88,12 @@ Message BaseResponse::GetResponce() {
 */ 
 void BaseResponse::SetStatus(Message::STATUS status) { 
     this->status = status;    
+}
+
+//! \brief Get do not need response status.
+//! \return bool - do not need response status.
+bool BaseResponse::IsNeedResponse() {
+	auto need = isNeedResponse;
+	isNeedResponse = true;
+	return need;
 }

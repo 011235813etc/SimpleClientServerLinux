@@ -3,155 +3,222 @@
 #include "../src/Client/ClientResponse.h"
 
 class ClientResponseTest : public ::testing::Test {
+  const int client_number = 512;
+  const int server_number = 19700101;
+  const int current_task = 10;
 protected:
+
+  std::unique_ptr<ClientResponse> c_response;
   virtual void SetUp() override {
+    c_response = std::unique_ptr<ClientResponse>(
+      new ClientResponse(client_number, total_tasks_num, current_task));
   }
 
   virtual void TearDown() override {
   }
 public:
   const int total_tasks_num = 20;
-  const int c_serial_num = 512;
-  const int s_serial_num = 19700101;
+
+  Message GetCorrect(ACTION a, STATUS s, int t) {
+    return Message(a, s, t, server_number);
+  }
+
+  Message FromServer(ACTION a, STATUS s, int t) {
+    return Message(a, s, t, client_number);
+  }
 };
-
-
-TEST_F(ClientResponseTest, nextCommandForServer) {
-
-  const int current_task = 10;
-  const int next_task = 11;
-
-  Message from_server(ACTION::RESPONSE, STATUS::ACCEPTED, current_task, s_serial_num);
-
-  ClientResponse c_response(c_serial_num, total_tasks_num, current_task);
-  c_response.SetLoading();
-  c_response.Processing(&from_server);
-
-  auto to_server = c_response.GetResponce();
-
-  Message correct(ACTION::COMMAND, STATUS::READY, next_task, c_serial_num);
-
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
-}
-
-TEST_F(ClientResponseTest, lastCommandForServer) {
-  unsigned int lastCommand = total_tasks_num - 1;
-
-  Message from_server(ACTION::RESPONSE, STATUS::ACCEPTED, lastCommand, s_serial_num);
-
-  ClientResponse c_response(c_serial_num, total_tasks_num, lastCommand);
-  c_response.SetLoading();
-  c_response.Processing(&from_server);
-
-  auto to_server = c_response.GetResponce();
-
-  Message correct(ACTION::COMMAND, STATUS::DONE, total_tasks_num, c_serial_num);
-
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
-}
-
-TEST_F(ClientResponseTest, passCommandForBusyServer) {
-
-  const int task = 10;
-
-  Message from_server(ACTION::RESPONSE, STATUS::BUSY, task, s_serial_num);
-
-  ClientResponse c_response(c_serial_num, total_tasks_num, task);
-  c_response.Processing(&from_server);
-
-  auto to_server = c_response.GetResponce();
-
-  Message correct(ACTION::RESPONSE, STATUS::READY, task, c_serial_num);
-
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
-}
-
-TEST_F(ClientResponseTest, getCommandFromServer) {
-
-  const int task = 5;
-
-  Message from_server(ACTION::COMMAND, STATUS::ACCEPTED, task, s_serial_num);
-
-  ClientResponse c_response(c_serial_num, total_tasks_num, task);
-  c_response.Processing(&from_server);
-
-  auto to_server = c_response.GetResponce();
-
-  Message correct(ACTION::RESPONSE, STATUS::ACCEPTED, task, c_serial_num);
-
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
-}
-
-
-TEST_F(ClientResponseTest, busyServer) {
-
-  const int task = 5;
-
-  Message from_server(ACTION::RESPONSE, STATUS::BUSY, task, s_serial_num);
-
-  ClientResponse c_response(c_serial_num, total_tasks_num, task);
-  c_response.Processing(&from_server);
-
-  auto to_server = c_response.GetResponce();
-
-  Message correct(ACTION::RESPONSE, STATUS::READY, task, c_serial_num);
-
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
-}
 
 TEST_F(ClientResponseTest, busyClient) {
 
   const int task = 5;
 
-  Message from_server(ACTION::RESPONSE, STATUS::BUSY, task, s_serial_num);
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::BUSY, task);
+  c_response->SetStatus(STATUS::BUSY);
+  c_response->Processing(&from_server);
 
-  ClientResponse c_response(c_serial_num, total_tasks_num, task);
-  c_response.SetStatus(STATUS::BUSY);
-  c_response.Processing(&from_server);
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::RESPONSE, STATUS::BUSY, task);
 
-  auto to_server = c_response.GetResponce();
-
-  Message correct(ACTION::RESPONSE, STATUS::BUSY, task, c_serial_num);
-
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
+  EXPECT_EQ(correct, result);
 }
 
-TEST_F(ClientResponseTest, tasksFromServerDone) {
+////////////////////////////////////////////////////////////////////////////////
 
-  const int task = 5;
+TEST_F(ClientResponseTest, FromServerCommandDone) {
 
-  Message from_server(ACTION::RESPONSE, STATUS::DONE, task, s_serial_num);
+  const int task = 1;
+  auto from_server = FromServer(ACTION::COMMAND, STATUS::DONE, task);
+  c_response->Processing(&from_server);
 
-  ClientResponse c_response(c_serial_num, total_tasks_num, task);
-  c_response.Processing(&from_server);
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
 
-  auto to_server = c_response.GetResponce();
+TEST_F(ClientResponseTest, FromServerCommandError) {
 
-  Message correct(ACTION::RESPONSE, STATUS::DONE, Message::done_task, c_serial_num);
+  const int task = 1;
+  auto from_server = FromServer(ACTION::COMMAND, STATUS::ERROR, task);
+  c_response->Processing(&from_server);
 
-  EXPECT_EQ(correct.action, to_server.action);
-  EXPECT_EQ(correct.status, to_server.status);
-  EXPECT_EQ(correct.task,   to_server.task);
-  EXPECT_EQ(correct.sender, to_server.sender);
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
 
-  EXPECT_EQ(c_response.GetStatus(), STATUS::DONE);
-  EXPECT_EQ(c_response.GetTask(),  (int)Message::done_task);
+TEST_F(ClientResponseTest, FromServerCommandBusy) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::COMMAND, STATUS::BUSY, task);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerCommandAccepted) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::COMMAND, STATUS::ACCEPTED, task);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerCommandReady) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::COMMAND, STATUS::READY, task);
+  c_response->Processing(&from_server);
+
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::RESPONSE, STATUS::ACCEPTED, task);
+
+  EXPECT_EQ(correct, result);
+  EXPECT_EQ(c_response->GetStatus(), STATUS::BUSY);
+  EXPECT_EQ(c_response->GetTask(), task);
+}
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_F(ClientResponseTest, FromServerResponseDoneLoadingTasks) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::DONE, task);
+  c_response->SetLoading(true);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+  EXPECT_EQ(c_response->GetTask(), (int)Message::launch_task);
+  EXPECT_EQ(c_response->GetLoading(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseDoneTasksDone) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::DONE, task);
+  c_response->SetLoading(false);
+  c_response->Processing(&from_server);
+
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::RESPONSE, STATUS::DONE, Message::done_task);
+
+  EXPECT_EQ(correct, result);
+  EXPECT_EQ(c_response->GetStatus(), STATUS::DONE);
+  EXPECT_EQ(c_response->GetTask(), (int)Message::done_task);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseError) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::ERROR, task);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseBusyRepeat) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::BUSY, task);
+  c_response->Processing(&from_server);
+
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::RESPONSE, STATUS::READY, task);
+
+  EXPECT_EQ(correct, result);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseBusyTimeout) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::BUSY, task);
+  c_response->Processing(&from_server);
+  c_response->Processing(&from_server);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseReadyLaunch) {
+
+  const int task = Message::launch_task;
+  const int newTask = 0;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::READY, task);
+  c_response->SetTask(Message::launch_task);
+  c_response->Processing(&from_server);
+
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::COMMAND, STATUS::READY, newTask);
+
+  EXPECT_EQ(correct, result);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseReadyLaunchAnotherCmd) {
+
+  const int task = Message::launch_task;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::READY, task);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseReadyContinue) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::READY, task);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseAcceptedLoading) {
+
+  const int task = Message::launch_task;
+  const int newTask = 0;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::ACCEPTED, task);
+  c_response->SetLoading(true);
+  c_response->Processing(&from_server);
+
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::COMMAND, STATUS::READY, newTask);
+
+  EXPECT_EQ(correct, result);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseAcceptedLoadingLast) {
+
+  const int task = total_tasks_num - 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::ACCEPTED, task);
+  c_response->SetLoading(true);
+  c_response->Processing(&from_server);
+
+  auto result = c_response->GetResponce();
+  auto correct = GetCorrect(ACTION::COMMAND, STATUS::DONE, total_tasks_num);
+
+  EXPECT_EQ(correct, result);
+}
+
+TEST_F(ClientResponseTest, FromServerResponseAcceptedNotLoading) {
+
+  const int task = 1;
+  auto from_server = FromServer(ACTION::RESPONSE, STATUS::ACCEPTED, task);
+  c_response->SetLoading(false);
+  c_response->Processing(&from_server);
+
+  EXPECT_EQ(c_response->IsNeedResponse(), false);
 }
