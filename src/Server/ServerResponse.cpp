@@ -42,10 +42,14 @@ ServerResponse& ServerResponse::operator=(const ServerResponse&& other) {
 }
  
 //! \brief Class destructor.
-//! Free the task queue.
+//! Free the task queue and dictionary with clients.
 ServerResponse::~ServerResponse() {
-	while(!task_queue.empty())	{
+	if(!task_queue.empty()) {
 		task_queue.clear();
+	}
+
+	if(!clients.empty()) {
+		clients.clear();
 	}
 }
  
@@ -53,6 +57,7 @@ ServerResponse::~ServerResponse() {
 //! \param Message* from_client - Pointer to received message from Client.
 //! \return void.
 void ServerResponse::Processing(Message* from_client) {
+
 	isNeedResponse = true;
 	switch(from_client->action) {
 	    case ACTION::COMMAND: 	{ Command(from_client);  break; }
@@ -102,7 +107,7 @@ void ServerResponse::Response(Message* from_client) {
 //! \param int task - task number.
 //! \return void.
 void ServerResponse::SaveCommand(int task) {
-	task_queue.push_front(task);
+	task_queue.push_back(task);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +121,6 @@ void ServerResponse::CommandClientDone(Message* from_client) {
 	std::cout << "Server is ready for execute tasks!" << std::endl;
 	isAcceptingCommands = false;
 }
-
  
 //! \brief Prepare response for command from client with status "ERROR".
 //! \param Message* from_client - Pointer to received message from Client.
@@ -130,7 +134,6 @@ void ServerResponse::CommandClientError(Message* from_client) {
 	}
 	response.Response(STATUS::DONE, Message::launch_task);
 }
-
  
 //! \brief Prepare response for command from client with status "READY".
 //! \param Message* from_client - Pointer to received message from Client.
@@ -153,10 +156,14 @@ void ServerResponse::CommandClientReady(Message* from_client) {
 //! \return void.
 void ServerResponse::ResponseClientDone(Message* from_client) {
 	if(!isAcceptingCommands) {
-		if(task < task_queue.size()) {
+		if(clients[from_client->sender] <= 0) {
+			clients[from_client->sender] = 0;
+		} 
+		if(clients[from_client->sender] < task_queue.size()) {
+			task = clients[from_client->sender];
 			std::cout << ">> Set to client task #" << task_queue[task] << std::endl;
 			response.Command(STATUS::READY, task_queue[task]);
-			task++;
+			clients[from_client->sender] = clients[from_client->sender] + 1;
 		} else {
 			std::cout << "Task stack empty" << std::endl;
 			response.Response(STATUS::DONE, Message::done_task);
@@ -165,7 +172,6 @@ void ServerResponse::ResponseClientDone(Message* from_client) {
 		isNeedResponse = false;
 	}
 }
-
  
 //! \brief Prepare response for response from client with status "READY".
 //! \param Message* from_client - Pointer to received message from Client.
@@ -178,4 +184,3 @@ void ServerResponse::ResponseClientReady(Message* from_client) {
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
-

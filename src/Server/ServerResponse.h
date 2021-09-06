@@ -7,13 +7,15 @@
 
 #include <iostream>
 #include <deque>
+#include <map>
 #include "../Message/Message.h"
 #include "../BaseResponse/BaseResponse.h"
 
 class ServerResponse : public BaseResponse {
 
-    std::deque<int> task_queue;    //!< Used for save commands from Client.
+    std::deque<int> task_queue;     //!< Used for save commands from Client.
     bool isAcceptingCommands;       //!< Used as a sign accepting commands.
+    std::map<int, int> clients;     //!< Dictionary with client number and completed task.
 
     void Command(Message* from_client);
     void Response(Message* from_client);

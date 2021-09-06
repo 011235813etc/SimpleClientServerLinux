@@ -55,16 +55,24 @@ TaskList::TaskList(char* path)
     \return bool - execution result.
 */
 bool TaskList::operator[](unsigned int idx) {
+    bool result = false;
     if(idx < commands.size()) {
         
         if(system(commands[idx].c_str())) {
             std::cout << "Task #" << idx << " - failure!" << std::endl;
-            return false;
+            result = false;
         } else {
             std::cout << "Task #" << idx << " - successfull!" << std::endl;
-            return true;
+            result = true;
         }
+        // using namespace std::chrono;
+
+        // milliseconds ms = duration_cast< milliseconds >( 
+        //     system_clock::now().time_since_epoch()
+        // );
+        // std::cout << "It took me " << ms.count() << " milliseconds.\n\n";
     }
+    return result;
 }
 
 /*! 
