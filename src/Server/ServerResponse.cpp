@@ -45,7 +45,7 @@ ServerResponse& ServerResponse::operator=(const ServerResponse&& other) {
 //! Free the task queue.
 ServerResponse::~ServerResponse() {
 	while(!task_queue.empty())	{
-		task_queue.pop();
+		task_queue.clear();
 	}
 }
  
@@ -102,7 +102,7 @@ void ServerResponse::Response(Message* from_client) {
 //! \param int task - task number.
 //! \return void.
 void ServerResponse::SaveCommand(int task) {
-	task_queue.push(task);
+	task_queue.push_front(task);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -125,8 +125,8 @@ void ServerResponse::CommandClientError(Message* from_client) {
 	std::cout << "ERROR!" << std::endl; 
 	std::cout << "Task steak will be cleared!" << std::endl; 	
 	while(!task_queue.empty())	{
-		std::cout << task_queue.front() << std::endl;
-		task_queue.pop();
+		std::cout << "Delete task #" << task_queue.front() << std::endl;
+		task_queue.pop_front();
 	}
 	response.Response(STATUS::DONE, Message::launch_task);
 }
@@ -153,10 +153,10 @@ void ServerResponse::CommandClientReady(Message* from_client) {
 //! \return void.
 void ServerResponse::ResponseClientDone(Message* from_client) {
 	if(!isAcceptingCommands) {
-		if(!task_queue.empty()) {
-			std::cout << ">> Set to client task #" << task_queue.front() << std::endl;
-			response.Command(STATUS::READY, task_queue.front());
-			task_queue.pop();
+		if(task < task_queue.size()) {
+			std::cout << ">> Set to client task #" << task_queue[task] << std::endl;
+			response.Command(STATUS::READY, task_queue[task]);
+			task++;
 		} else {
 			std::cout << "Task stack empty" << std::endl;
 			response.Response(STATUS::DONE, Message::done_task);

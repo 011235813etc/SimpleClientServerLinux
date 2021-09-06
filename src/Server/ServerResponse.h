@@ -6,14 +6,14 @@
 #define SERVERRESPONSE_H
 
 #include <iostream>
-#include <queue>
+#include <deque>
 #include "../Message/Message.h"
 #include "../BaseResponse/BaseResponse.h"
 
 class ServerResponse : public BaseResponse {
 
-    std::queue<int> task_queue;         //!< Used for save commands from Client.
-    bool isAcceptingCommands;           //!< Used as a sign accepting commands.
+    std::deque<int> task_queue;    //!< Used for save commands from Client.
+    bool isAcceptingCommands;       //!< Used as a sign accepting commands.
 
     void Command(Message* from_client);
     void Response(Message* from_client);
