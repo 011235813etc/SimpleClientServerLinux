@@ -22,7 +22,7 @@ public:
     TaskList(char* path);
     //! \brief Class destructor.
     virtual ~TaskList() = default;
-    void operator[](unsigned int idx);
+    bool operator[](unsigned int idx);
     size_t size();
 };
 

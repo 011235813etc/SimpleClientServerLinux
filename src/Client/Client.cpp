@@ -13,7 +13,7 @@ int Client::serial_number = 0;
 Client::Client(ACTION action, unsigned int total_tasks) {
 
 	srand(time(NULL));
-	serial_number = rand() % 100 + 1; 
+	serial_number = rand() % 100 + 1 + static_cast<int>(action); 
 
     to_server = Message(action, STATUS::READY, Message::launch_task, serial_number); 
 

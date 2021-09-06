@@ -52,14 +52,17 @@ TaskList::TaskList(char* path)
 /*! 
     \brief Get command from vector by index.
     \param unsigned int idx - command index.
-    \return void.
+    \return bool - execution result.
 */
-void TaskList::operator[](unsigned int idx) {
+bool TaskList::operator[](unsigned int idx) {
     if(idx < commands.size()) {
+        
         if(system(commands[idx].c_str())) {
             std::cout << "Task #" << idx << " - failure!" << std::endl;
+            return false;
         } else {
             std::cout << "Task #" << idx << " - successfull!" << std::endl;
+            return true;
         }
     }
 }

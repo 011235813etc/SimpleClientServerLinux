@@ -15,7 +15,8 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "Server is launched" << std::endl << std::endl;
 
-	const uint8_t timeout_sec = (argv[1] == "") ? 255 : stoi(argv[1]);
+	const uint8_t timeout_sec = (argc == 1) ? 255 : stoi(argv[1]);
+	// const uint8_t timeout_sec = (argv[1] == "") ? 255 : stoi(argv[1]);
 
     std::unique_ptr<Server> server(new Server(timeout_sec));
     

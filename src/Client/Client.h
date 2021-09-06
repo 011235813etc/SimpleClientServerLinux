@@ -24,7 +24,7 @@ class Client {
     static int serial_number;                   //!< Client serial number.
     std::unique_ptr<ClientResponse> prepare_response;  //!< Used for prepare response message for Server.
 public:
-    explicit Client(ACTION action=ACTION::COMMAND, unsigned int total_tasks=0);
+    explicit Client(ACTION action=ACTION::RESPONSE, unsigned int total_tasks=0);
     virtual ~Client();
     void Send(Message& _to_server);
     void Recv();
