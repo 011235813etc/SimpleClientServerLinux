@@ -19,8 +19,8 @@ protected:
   virtual void TearDown() override {
   }
 public:
-  char* path_test_server1 = "./taske_for_client_server/launch_server_for_test1.sh";
-  char* path_test_server2 = "./taske_for_client_server/launch_server_for_test2.sh";
+  const char* path_test_server1 = "../test/tasks_for_client_server/launch_server_for_test1.sh";
+  const char* path_test_server2 = "../test/tasks_for_client_server/launch_server_for_test2.sh";
   
   void Compare(Client::type_history& history, Client::type_history& correct) {
     if(history.size() != correct.size()) {
@@ -44,7 +44,7 @@ TEST_F(ClientTest, sendCommandsFromClientToServer) {
   std::chrono::seconds dura(one_sec);
   std::this_thread::sleep_for(dura);
 
-  char path[] = "/home/lemongrab/cpp_projects/vs_code/SimpleClientServerLinux/task_list.txt";
+  char path[] = "../test/tasks_for_client_server/task_list_for_test1.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
   std::unique_ptr<Client> client = std::unique_ptr<Client>(new Client(ACTION::COMMAND, t_list->size()));
@@ -104,7 +104,7 @@ TEST_F(ClientTest, sendCommandsFromServerToClient) {
   std::chrono::seconds dura(one_sec);
   std::this_thread::sleep_for(dura);
 
-  char path[] = "/home/lemongrab/cpp_projects/vs_code/SimpleClientServerLinux/task_list.txt";
+  char path[] = "../test/tasks_for_client_server/task_list_for_test2.txt";
 
 	std::unique_ptr<TaskList> t_list(new TaskList(path));
   std::unique_ptr<Client> client = std::unique_ptr<Client>(new Client(ACTION::COMMAND, t_list->size()));

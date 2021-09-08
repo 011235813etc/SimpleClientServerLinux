@@ -1,6 +1,6 @@
-/*! \file main.cpp
-	\brief Client application entry point.
-*/
+//! \file main.cpp
+//! \brief Client application entry point.
+
 #include <iostream>
 #include <memory>
 #include <cstring> 
@@ -12,12 +12,11 @@
 #include <chrono>
 #include <thread>
 
-/*! 
-    \brief %Client application begin.
-    \param int argc -
-    \param char* argv[] - 
-    \return 0.
-*/ 
+//! \brief %Client application begin.
+//! \param int argc - arguments count.
+//! \param char* argv[1] - path to task list.
+//! \param char* argv[2] - command for appoint client as a loader.
+//! \return 0.
 int main(int argc, char* argv[]) {
     
     using namespace std;
@@ -28,7 +27,7 @@ int main(int argc, char* argv[]) {
     }
 
     //**//
-    // argv[1] = "/home/lemongrab/cpp_projects/vs_code/SimpleClientServerLinux/tasks/task_list.txt";
+    // argv[1] = "./tasks/task_list.txt";
     // argv[2] = "loader";
     // argc = 3;
     //**//

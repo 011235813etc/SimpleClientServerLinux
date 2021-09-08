@@ -1,11 +1,12 @@
 //! \file ServerResponse.cpp
 //! \brief ServerResponse class implementation.
-//! This class describe preparing response for Client.
+//! 
+//! This class describe preparing response for client.
 
 #include "ServerResponse.h"
 
 //! \brief Constructor with argument.
-//! \param int serial_number - Client serial number
+//! \param int serial_number - server serial number
 ServerResponse::ServerResponse(int serial_number) : BaseResponse(serial_number, 0, 0) {
     isAcceptingCommands = false;
 }
@@ -53,8 +54,8 @@ ServerResponse::~ServerResponse() {
 	}
 }
  
-//! \brief Processing message from Client.
-//! \param Message* from_client - Pointer to received message from Client.
+//! \brief Processing message from client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::Processing(Message* from_client) {
 
@@ -71,8 +72,8 @@ void ServerResponse::Processing(Message* from_client) {
 }
 
  
-//! \brief Preparing command message to Client.
-//! \param Message* from_client - Pointer to received message from Client.
+//! \brief Preparing command message to client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::Command(Message* from_client) {
     switch(from_client->status) {
@@ -87,8 +88,8 @@ void ServerResponse::Command(Message* from_client) {
     }
 }
 
-//! \brief Preparing response message to Client.
-//! \param Message* from_client - Pointer to received message from Client.
+//! \brief Preparing response message to client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::Response(Message* from_client) {
     switch(from_client->status) {
@@ -103,7 +104,7 @@ void ServerResponse::Response(Message* from_client) {
 }
 
  
-//! \brief Saving commands from Client.
+//! \brief Saving commands from client.
 //! \param int task - task number.
 //! \return void.
 void ServerResponse::SaveCommand(int task) {
@@ -113,7 +114,7 @@ void ServerResponse::SaveCommand(int task) {
 ////////////////////////////////////////////////////////////////////////////////
  
 //! \brief Prepare response for command from client with status "DONE".
-//! \param Message* from_client - Pointer to received message from Client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::CommandClientDone(Message* from_client) {
 	response.Response(STATUS::DONE, from_client->task);
@@ -123,7 +124,7 @@ void ServerResponse::CommandClientDone(Message* from_client) {
 }
  
 //! \brief Prepare response for command from client with status "ERROR".
-//! \param Message* from_client - Pointer to received message from Client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::CommandClientError(Message* from_client) {
 	std::cout << "ERROR!" << std::endl; 
@@ -136,7 +137,7 @@ void ServerResponse::CommandClientError(Message* from_client) {
 }
  
 //! \brief Prepare response for command from client with status "READY".
-//! \param Message* from_client - Pointer to received message from Client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::CommandClientReady(Message* from_client) {
 	isAcceptingCommands = true;
@@ -152,7 +153,7 @@ void ServerResponse::CommandClientReady(Message* from_client) {
 
  
 //! \brief Prepare response for response from client with status "DONE".
-//! \param Message* from_client - Pointer to received message from Client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::ResponseClientDone(Message* from_client) {
 	if(!isAcceptingCommands) {
@@ -174,7 +175,7 @@ void ServerResponse::ResponseClientDone(Message* from_client) {
 }
  
 //! \brief Prepare response for response from client with status "READY".
-//! \param Message* from_client - Pointer to received message from Client.
+//! \param Message* from_client - Pointer to received message from client.
 //! \return void.
 void ServerResponse::ResponseClientReady(Message* from_client) {
 	if(isAcceptingCommands) {

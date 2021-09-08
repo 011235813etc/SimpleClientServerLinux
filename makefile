@@ -58,14 +58,15 @@ default:
 
 .PHONY: all
 all: clean default
-#all: docs
 
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
 
 docs:
+	@echo "Creating documents."
 	@doxygen
+	@echo "Documents created!"
 
 ###############################################################################
 UNIT_TARTGET	:= unit
@@ -109,4 +110,3 @@ $(BUILD_DIR)/%.o: %.cpp
 
 .PHONY: unit
 unit: link
-# unit: clean unit_compile $(UNIT)

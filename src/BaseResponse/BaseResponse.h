@@ -1,12 +1,13 @@
-/*! \file BaseResponse.cpp
-    \brief BaseResponse class declaration.
-*/
+//! \file BaseResponse.cpp
+//! \brief BaseResponse class declaration.
+
 #ifndef BASERESPONSE_H
 #define BASERESPONSE_H
 
 #include <iostream>
 #include "../Message/Message.h"
 
+//! \brief This class used as base class for prepare response for client/server. 
 class BaseResponse {
 protected:
     int total_tasks;        //!< Used for save total number of  tasks.
@@ -15,13 +16,13 @@ protected:
     int task;               //!< Used for save current task.
     bool isNeedResponse;    //!< Used for forming response.
 
-    //! \brief Preparing command message to Server.
-    //! \param Message* received - Pointer to received message from Server.
+    //! \brief Preparing command message to server.
+    //! \param Message* received - Pointer to received message from server.
     //! \return void.
     virtual void Command(Message* received) = 0;
 
-    //! \brief Preparing response message to Server.
-    //! \param Message* received - Pointer to received message from Server.
+    //! \brief Preparing response message to server.
+    //! \param Message* received - Pointer to received message from server.
     //! \return void.
     virtual void Response(Message* received) = 0;
 
@@ -34,7 +35,7 @@ public:
     virtual ~BaseResponse() {};
 
     //! \brief Processing message.
-    //! \param Message* received - Pointer to received message from Server.
+    //! \param Message* received - Pointer to received message from server.
     //! \return void.
     virtual void Processing(Message* received) = 0;
 

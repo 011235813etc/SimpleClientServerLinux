@@ -1,6 +1,6 @@
-/*! \file Server.h
-    \brief Server class declaration.
-*/
+//! \file Server.h
+//! \brief Server class declaration.
+
 #ifndef SERVER_H
 #define SERVER_H
 
@@ -15,6 +15,7 @@
 #include <stack>
 #include "ServerResponse.h"
 
+//! \brief This class describe the server behavior and used for exchange information with clients.
 class Server {
     std::unique_ptr<SocketAddress> soc_addr;	//!< Current socket address.
     int listener;								//! Create lisener socket descriptor.
@@ -22,11 +23,11 @@ class Server {
     
 	timeval timeout;							//!< Used for waiting event in socket.
 	int task;									//!< Used for save current task number.
-	static const int serial_number = 19700101; 	//!< Server serial number.
+	static const int serial_number = 19700101; 	//!< %Server serial number.
 
-	std::unique_ptr<ServerResponse> prepare_response; 	//!< Used for save response message for Client.
-	std::stack<int> task_stack;					//!< Used for save tasks from Client.
-	STATUS status;						//!< Current Server status.
+	std::unique_ptr<ServerResponse> prepare_response; 	//!< Used for save response message for client.
+	std::stack<int> task_stack;			//!< Used for save tasks from client.
+	STATUS status;						//!< Current server status.
 	
 public:
     explicit Server(uint32_t timeout_sec);

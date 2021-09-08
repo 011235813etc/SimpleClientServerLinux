@@ -1,21 +1,18 @@
-/*! \file Server.cpp
-    \brief Server class implementation.
-
-    This class describe Server.
-    Class include description socket connection with Client.
-*/
+//! \file Server.cpp
+//! \brief Server class implementation.
+//! 
+//! This class describe Server.
+//! Class include description socket connection with client.
 
 #include "Server.h"
 
-/*! 
-    \brief Constructor with argument.
-    \param uint32_t timeout_sec - timeout for waiting response from Client.
-*/ 
+//! \brief Constructor with argument.
+//! \param uint32_t timeout_sec - timeout for waiting response from client.
 Server::Server(uint32_t timeout_sec) {
 	
 	task = 0;
 
-	// Using only with seconds value,
+	// Used only with seconds value,
 	// because in this case milliseconds not important for me.
 	timeout.tv_sec = timeout_sec; 
 	timeout.tv_usec = 0;
@@ -43,27 +40,23 @@ Server::Server(uint32_t timeout_sec) {
 	// Waiting for requests.
 	listen(listener, 2);
 
-	// Create ServerResponse class object for save response message for Client.
+	// Create ServerResponse class object for save response message for client.
 	prepare_response = std::unique_ptr<ServerResponse>(new ServerResponse(serial_number));
 	status = STATUS::READY;
 	to_client = Message(ACTION::RESPONSE, STATUS::READY, Message::launch_task, serial_number); 
 }
 
-/*! 
-    \brief Class destructor.
-
-	Close socket.
-*/ 
+//! \brief Class destructor.
+//! 
+//! Close socket.
 Server::~Server() {
     close(listener);
 }
 
-/*! 
-    \brief Processing Client response.
-    \param std::set<int>& clients - set with clients.
-    \param fd_set& readset - socket descriptor.
-	\return void.
-*/
+//! \brief Processing client response.
+//! \param std::set<int>& clients - set with clients.
+//! \param fd_set& readset - socket descriptor.
+//! \return void.
 void Server::CreateSocketQueue(std::set<int>& clients, fd_set& readset) {
 	using namespace std;
 	
@@ -75,12 +68,10 @@ void Server::CreateSocketQueue(std::set<int>& clients, fd_set& readset) {
 	}
 }
 
-/*! 
-    \brief Processing Client response.
-    \param std::set<int>& clients - set with clients.
-    \param fd_set& readset - socket descriptor.
-	\return void.
-*/
+//! \brief Processing client response.
+//! \param std::set<int>& clients - set with clients.
+//! \param fd_set& readset - socket descriptor.
+//! \return void.
 void Server::WaitEvent(std::set<int>& clients, fd_set& readset) {
 	using namespace std;
 	
@@ -92,12 +83,10 @@ void Server::WaitEvent(std::set<int>& clients, fd_set& readset) {
 	}
 }
 
-/*! 
-    \brief Processing Client response.
-    \param[in] std::set<int>& clients - clients set.
-    \param[in] fd_set& readset - socket descriptor.
-	\return void.
-*/
+//! \brief Processing client response.
+//! \param[in] std::set<int>& clients - clients set.
+//! \param[in] fd_set& readset - socket descriptor.
+//! \return void.
 void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 	// Determine the type of event
 	if(FD_ISSET(listener, &readset)) {
@@ -112,11 +101,9 @@ void Server::AddNewClientsRequests(std::set<int>& clients, fd_set& readset) {
 	}
 }
 
-/*! 
-    \brief Processing Client response.
-    \param[in, out] Message* from_client - pointer to the buffer.
-	\return void.
-*/
+//! \brief Processing client response.
+//! \param[in, out] Message* from_client - pointer to the buffer.
+//! \return void.
 void Server::DataProcessing(Message* from_client, int sock_descriptor) {
 
     std::cout << ">> Received message from client:" << std::endl;
@@ -131,19 +118,15 @@ void Server::DataProcessing(Message* from_client, int sock_descriptor) {
 	}
 }
 
-/*! 
-    \brief Set new task
-    \param uint8_t task - new task.
-    \param void.
-*/ 
+//! \brief Set new task
+//! \param uint8_t task - new task.
+//! \param void.
 void Server::SetTask(uint8_t task) { 
 	this->task = task;	
 }
 
-/*! 
-    \brief Get current task.
-    \return int task - current task.
-*/ 
+//! \brief Get current task.
+//! \return int task - current task.
 int Server::GetTask() { 
 	return task;	
 }

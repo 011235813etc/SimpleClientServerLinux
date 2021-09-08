@@ -1,6 +1,6 @@
-/*! \file Client.h
-    \brief Client class declaration.
-*/
+//! \file Client.h
+//! \brief Client class declaration.
+
 #ifndef CLIENT_H
 #define CLIENT_H
 
@@ -15,14 +15,15 @@
 #include "../TaskList/TaskList.h"
 #include "../DebugFlags.h"
 
+//! \brief This class describe the client behavior and used for exchange information with server.
 class Client {
     std::unique_ptr<SocketAddress> soc_addr;    //!< Current socket address.
     Message to_server;                          //!< Used for save prepare message.
     Message* from_server = nullptr;             //!< Used for point to received message from server.
     int sock_descriptor;                        //!< Used for save socket.
     char buf[sizeof(to_server)];                //!< Buffer for save received information.
-    static int serial_number;                   //!< Client serial number.
-    std::unique_ptr<ClientResponse> prepare_response;  //!< Used for prepare response message for Server.
+    static int serial_number;                   //!< %Client serial number.
+    std::unique_ptr<ClientResponse> prepare_response;  //!< Used for prepare response message for server.
 public:
     explicit Client(ACTION action=ACTION::RESPONSE, unsigned int total_tasks=0);
     virtual ~Client();
@@ -36,8 +37,8 @@ public:
 #ifdef DEBUG
   using type_history = std::vector<std::pair<Message, TYPE> >; //!< Typedef for history save vector.
 private:
-    bool enableHistoryRecording = true;                           //!< Used for enable/disable history recording.
-    type_history history;      //!< Used for save sent messages.
+    bool enableHistoryRecording = true;     //!< Used for enable/disable history recording.
+    type_history history;                   //!< Used for save sent messages.
 public:
     //! \brief Get sent commands history (used only in unit testing).
     //! \return type_history - Sent/received commands history.

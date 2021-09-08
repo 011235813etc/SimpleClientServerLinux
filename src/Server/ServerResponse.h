@@ -1,6 +1,5 @@
-/*! \file ServerResponse.h
-    \brief ServerResponse class declaration.
-*/
+//! \file ServerResponse.h
+//! \brief ServerResponse class declaration.
 
 #ifndef SERVERRESPONSE_H
 #define SERVERRESPONSE_H
@@ -11,11 +10,12 @@
 #include "../Message/Message.h"
 #include "../BaseResponse/BaseResponse.h"
 
+//! \brief This class describe preparing response for client.
 class ServerResponse : public BaseResponse {
 
-    std::deque<int> task_queue;     //!< Used for save commands from Client.
+    std::deque<int> task_queue;     //!< Used for save commands from client.
     bool isAcceptingCommands;       //!< Used as a sign accepting commands.
-    std::map<int, int> clients;     //!< Dictionary with client number and completed task.
+    std::map<unsigned int, unsigned int> clients;     //!< Dictionary with client number and completed task.
 
     void Command(Message* from_client);
     void Response(Message* from_client);

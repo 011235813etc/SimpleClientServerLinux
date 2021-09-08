@@ -1,6 +1,6 @@
-/*! \file DebugFlags.h
-    \brief Used for build unit testsing target.
-*/
+//! \file DebugFlags.h
+//! \brief Used for build unit testsing target.
+
 #ifndef DEBUGFLAGS_H
 #define DEBUGFLAGS_H
 

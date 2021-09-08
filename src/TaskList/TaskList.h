@@ -1,8 +1,5 @@
-/*! \file TaskList.h
-    \brief TaskList class declaration.
-
-    Class using for save commands from file and get them from index.
-*/
+//! \file TaskList.h
+//! \brief TaskList class declaration.
 
 #ifndef TASKLIST_H
 #define TASKLIST_H
@@ -14,12 +11,14 @@
 #include <algorithm>
 #include <iterator>
 #include <cstdlib>
+#include <iostream>
 
 #include <chrono>
 
+//! \brief This class used for save commands from file and get them from index.
 class TaskList {
 
-    std::vector<std::string> commands;  //!< Using for save commands from file.
+    std::vector<std::string> commands;  //!< Used for save commands from file.
 public:
     TaskList(char* path);
     //! \brief Class destructor.

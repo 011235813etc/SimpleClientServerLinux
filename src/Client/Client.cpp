@@ -1,8 +1,8 @@
 //! \file Client.cpp
 //! \brief Client class implementation.
 //! 
-//! This class using for exchange information with Server. 
-//! Class include description socket connection with Server.
+//! This class used for exchange information with server. 
+//! Class include description socket connection with server.
 
 #include "Client.h"
 
@@ -39,7 +39,7 @@ Client::~Client() {
     close(sock_descriptor);
 }
 
-//! \brief Receive message from Server.
+//! \brief Receive message from server.
 //! \return void
 void Client::Recv() {
     recv(sock_descriptor, buf, sizeof(buf), 0);
@@ -56,8 +56,8 @@ void Client::Recv() {
 #endif //DEBUG
 }
 
-//! \brief Send message to Server.
-//! \param[in] Message& _to_server - from_server message for Server.
+//! \brief Send message to server.
+//! \param[in] Message& _to_server - from_server message for server.
 //! \return void.
 void Client::Send(Message& _to_server) {
     send(sock_descriptor, reinterpret_cast<void*>(&_to_server), sizeof(_to_server), 0);
@@ -74,7 +74,7 @@ void Client::Send(Message& _to_server) {
 }
 
 //! \brief Processing meaasge from server.
-//! \param Message* from_server - Pointer to received message from Server.
+//! \param Message* from_server - Pointer to received message from server.
 //! \return void.
 void Client::DataProcessing(Message* from_server) {
     prepare_response->Processing(from_server);
@@ -89,7 +89,6 @@ int Client::GetSerialNumber()  {
 //! \brief Launch to set commands to server.
 //! \return void.
 void Client::LoadTasks() {
-    unsigned int task = 0;
     Send(to_server);
     Recv();
     DataProcessing(from_server);

@@ -1,2 +1,2 @@
-./tasks_for_TaskList/task_1.sh
-./tasks_for_TaskList/task_2.sh
+../test/tasks_for_TaskList/task_1.sh
+../test/tasks_for_TaskList/task_2.sh

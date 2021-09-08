@@ -1,33 +1,30 @@
-/*! \file TaskList.cpp
-    \brief TaskList class implementation.
+//! \file TaskList.cpp
+//! \brief TaskList class implementation.
+//! 
+//! Used for save commands from file and get them from index.
 
-    Class using for save commands from file and get them from index.
-*/
 #include "TaskList.h"
 
-/*! 
-    \brief Constructor with argument.
-
-    Creates a list of task and save him to std::vector.
-    Comments like "//" will be ignored.
-
-    \param char* path - path to the file with commands.
-    \return void.
-*/ 
-TaskList::TaskList(char* path)
-{
+//! \brief Constructor with argument.
+//! 
+//! Creates a list of task and save him to std::vector.
+//! Comments like "//" will be ignored.
+//! 
+//! \param char* path - path to the file with commands.
+//! \return void.
+TaskList::TaskList(char* path) {
     using namespace std;
 
     auto is_space {
-        [](char ch)
-        {
+        [](char ch) {
             return ch == ' ';
         }
     };
 
+    cout << path << endl;
+
     fstream file(path);
-    if(file.is_open())
-    {
+    if(file.is_open()) {
         const string script_def = ".sh";
         const string comment_def = "//";
 
@@ -49,11 +46,9 @@ TaskList::TaskList(char* path)
     file.close();
 }
 
-/*! 
-    \brief Get command from vector by index.
-    \param unsigned int idx - command index.
-    \return bool - execution result.
-*/
+//! \brief Get command from vector by index.
+//! \param unsigned int idx - command index.
+//! \return bool - execution result.
 bool TaskList::operator[](unsigned int idx) {
     bool result = false;
     if(idx < commands.size()) {
@@ -75,10 +70,8 @@ bool TaskList::operator[](unsigned int idx) {
     return result;
 }
 
-/*! 
-    \brief Get command count.
-    \return size_t - command count
-*/
+//! \brief Get command count.
+//! \return size_t - command count
 size_t TaskList::size() {
     return commands.size();
 }

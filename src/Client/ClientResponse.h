@@ -1,6 +1,6 @@
-/*! \file ClientResponse.h
-    \brief ClientResponse class declaration. 
-*/
+//! \file ClientResponse.h
+//! \brief ClientResponse class declaration. 
+
 #ifndef CLIENTRESPONSE_H
 #define CLIENTRESPONSE_H
 
@@ -10,6 +10,7 @@
 #include "../Message/Message.h"
 #include "../BaseResponse/BaseResponse.h"
 
+//! \brief This class describe preparing response or command for server.
 class ClientResponse : public BaseResponse {
     void Command(Message* from_server);
     void Response(Message* from_server);
